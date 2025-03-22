@@ -14,6 +14,7 @@ import { useAppContext } from '../context/AppContext';
 const SelectedProviders: React.FC = () => {
   const { selectedProviders, removeProvider } = useAppContext();
   const bgColor = useColorModeValue('gray.50', 'gray.700');
+  const itemBgColor = useColorModeValue('white', 'gray.600');
 
   if (selectedProviders.length === 0) {
     return (
