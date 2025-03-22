@@ -72,8 +72,8 @@ const EvaluationsPage: React.FC = () => {
           value={selectedPromptId}
           onChange={handlePromptChange}
         >
-          {prompts.map((prompt) => (
-            <option key={prompt.id} value={prompt.id}>
+          {prompts.map((prompt, index) => (
+            <option key={prompt.id || `prompt-${index}`} value={prompt.id || ''}>
               {prompt.title}
             </option>
           ))}
@@ -97,8 +97,8 @@ const EvaluationsPage: React.FC = () => {
         </Box>
       ) : (
         <VStack spacing={4} align="stretch">
-          {evaluations.map((evaluation) => (
-            <EvaluationResultCard key={evaluation.id} evaluation={evaluation} />
+          {evaluations.map((evaluation, index) => (
+            <EvaluationResultCard key={evaluation.id || `evaluation-${index}`} evaluation={evaluation} />
           ))}
         </VStack>
       )}
