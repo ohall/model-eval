@@ -14,11 +14,19 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, onDelete }) => {
   const borderColor = useColorModeValue('gray.200', 'gray.600');
 
   const handleEdit = () => {
-    navigate(`/prompts/edit/${prompt.id}`);
+    if (prompt.id) {
+      navigate(`/prompts/edit/${prompt.id}`);
+    } else {
+      console.error('Cannot edit prompt: ID is undefined');
+    }
   };
 
   const handleEvaluate = () => {
-    navigate(`/prompts/evaluate/${prompt.id}`);
+    if (prompt.id) {
+      navigate(`/prompts/evaluate/${prompt.id}`);
+    } else {
+      console.error('Cannot evaluate prompt: ID is undefined');
+    }
   };
 
   const handleDelete = () => {
@@ -51,10 +59,32 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, onDelete }) => {
       </HStack>
       
       <HStack mt={4} spacing={3}>
-        <Button size="sm" colorScheme="blue" onClick={handleEvaluate}>Evaluate</Button>
-        <Button size="sm" onClick={handleEdit}>Edit</Button>
+        <Button 
+          size="sm" 
+          colorScheme="blue" 
+          onClick={handleEvaluate}
+          isDisabled={!prompt.id}
+          title={!prompt.id ? "Cannot evaluate: Prompt ID is missing" : ""}
+        >
+          Evaluate
+        </Button>
+        <Button 
+          size="sm" 
+          onClick={handleEdit}
+          isDisabled={!prompt.id}
+          title={!prompt.id ? "Cannot edit: Prompt ID is missing" : ""}
+        >
+          Edit
+        </Button>
         {onDelete && (
-          <Button size="sm" colorScheme="red" onClick={handleDelete}>Delete</Button>
+          <Button 
+            size="sm" 
+            colorScheme="red" 
+            onClick={handleDelete}
+            isDisabled={!prompt.id}
+          >
+            Delete
+          </Button>
         )}
       </HStack>
     </Box>
