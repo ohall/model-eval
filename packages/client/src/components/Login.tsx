@@ -109,6 +109,41 @@ const Login: React.FC = () => {
             logo_alignment="center"
             text="signin_with"
           />
+          
+          {error && (
+            <Box mt={5} pt={4} borderTopWidth="1px">
+              <Text fontSize="sm" mb={3} fontWeight="bold">
+                Having trouble with Google Sign-In?
+              </Text>
+              <Button 
+                colorScheme="gray" 
+                size="sm"
+                onClick={() => {
+                  // For testing only - simulate a successful login 
+                  // This should be replaced with a proper demo/test account login
+                  const testUser = {
+                    email: "test@example.com",
+                    name: "Test User",
+                    provider: "google" as const
+                  };
+                  
+                  // Note: In a real app, you'd have proper auth here
+                  // This is just for demonstration purposes
+                  login("fake-jwt-token-for-demo", testUser);
+                  
+                  toast({
+                    title: "Demo mode activated",
+                    description: "You're now using a test account. This is for demonstration only.",
+                    status: "info",
+                    duration: 5000,
+                    isClosable: true,
+                  });
+                }}
+              >
+                Use Demo Account
+              </Button>
+            </Box>
+          )}
         </Box>
       </VStack>
     </Center>
