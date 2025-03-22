@@ -48,8 +48,8 @@ services:
              pnpm dlx create-vite@latest temp-client --template react-ts --yes &&
              cp -r packages/shared /app/shared &&
              cd /app/temp-client &&
-             npm install &&
-             npm install react-router-dom axios @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query react-markdown react-syntax-highlighter react-toastify &&
+             npm install --legacy-peer-deps react@18.2.0 react-dom@18.2.0 &&
+             npm install --legacy-peer-deps react-router-dom axios @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query react-markdown react-syntax-highlighter react-toastify &&
              cp -r /app/packages/client/src /app/temp-client/ &&
              mkdir -p /app/temp-client/src/test &&
              touch /app/temp-client/src/test/setup.ts &&
