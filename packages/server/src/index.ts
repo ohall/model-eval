@@ -33,9 +33,12 @@ app.get('/health', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
+// Ensure we have the updated port from config
+const port = parseInt(process.env.PORT || '8001', 10);
+
 // Start server
-const server = app.listen(PORT, () => {
-  logger.info(`Server running in ${NODE_ENV} mode on port ${PORT}`);
+const server = app.listen(port, () => {
+  logger.info(`Server running in ${NODE_ENV} mode on port ${port}`);
 });
 
 // Handle unhandled promise rejections
