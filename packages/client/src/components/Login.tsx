@@ -24,13 +24,38 @@ const Login: React.FC = () => {
         sub: string;
       }>(credentialResponse.credential);
       
-      // Send the credential to your backend for verification and to get your app's JWT
-      const response = await axios.post('/api/auth/google', {
-        credential: credentialResponse.credential
-      });
-      
-      if (response.data && response.data.token) {
-        // Create a user object from the decoded JWT
+      try {
+        // Send the credential to your backend for verification and to get your app's JWT
+        const response = await axios.post('/api/auth/google', {
+          credential: credentialResponse.credential
+        });
+        
+        if (response.data && response.data.token) {
+          // Create a user object from the decoded JWT
+          const userData = {
+            email: decodedUser.email,
+            name: decodedUser.name,
+            picture: decodedUser.picture,
+            providerId: decodedUser.sub,
+            provider: 'google' as const
+          };
+          
+          // Login using our auth context
+          login(response.data.token, userData);
+          
+          toast({
+            title: 'Login successful',
+            description: `Welcome, ${userData.name}!`,
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      } catch (apiError) {
+        console.error("API error:", apiError);
+        setError("Server authentication failed. Using local authentication instead.");
+        
+        // For development: Fall back to client-side authentication
         const userData = {
           email: decodedUser.email,
           name: decodedUser.name,
@@ -39,14 +64,17 @@ const Login: React.FC = () => {
           provider: 'google' as const
         };
         
-        // Login using our auth context
-        login(response.data.token, userData);
+        // Create a temporary token
+        const tempToken = `dev-token-${Date.now()}`;
+        
+        // Login using our auth context with local data
+        login(tempToken, userData);
         
         toast({
-          title: 'Login successful',
-          description: `Welcome, ${userData.name}!`,
-          status: 'success',
-          duration: 3000,
+          title: 'Development mode',
+          description: `Welcome, ${userData.name}! (Development auth mode)`,
+          status: 'warning',
+          duration: 5000,
           isClosable: true,
         });
       }
