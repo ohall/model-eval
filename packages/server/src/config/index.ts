@@ -31,7 +31,7 @@ export const providerConfigs: ProviderConfigs = {
   [Provider.GOOGLE]: {
     provider: Provider.GOOGLE,
     apiKey: GOOGLE_API_KEY,
-    models: ['gemini-pro', 'gemini-pro-vision'],
-    defaultModel: 'gemini-pro',
+    models: ['gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-1.0-pro'],
+    defaultModel: 'gemini-1.5-pro',
   },
 };

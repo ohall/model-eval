@@ -34,34 +34,38 @@ export class GoogleService {
         generationConfig,
       });
 
-    const endTime = Date.now();
-    const latencyMs = endTime - startTime;
+      const endTime = Date.now();
+      const latencyMs = endTime - startTime;
 
-    // Google's API doesn't provide token counts directly,
-    // so we'll estimate based on characters (rough approximation)
-    const promptChars = prompt.length;
-    const responseText = response.response.text();
-    const completionChars = responseText.length;
-    
-    // Very rough approximation: ~4 characters per token
-    const promptTokens = Math.ceil(promptChars / 4);
-    const completionTokens = Math.ceil(completionChars / 4);
-    const totalTokens = promptTokens + completionTokens;
+      // Google's API doesn't provide token counts directly,
+      // so we'll estimate based on characters (rough approximation)
+      const promptChars = prompt.length;
+      const responseText = response.response.text();
+      const completionChars = responseText.length;
+      
+      // Very rough approximation: ~4 characters per token
+      const promptTokens = Math.ceil(promptChars / 4);
+      const completionTokens = Math.ceil(completionChars / 4);
+      const totalTokens = promptTokens + completionTokens;
 
-    // Approximate cost for Gemini Pro (very simplified)
-    const costUsd = (promptTokens * 0.000000125) + (completionTokens * 0.000000375);
+      // Approximate cost for Gemini Pro (very simplified)
+      const costUsd = (promptTokens * 0.000000125) + (completionTokens * 0.000000375);
 
-    const metrics: EvaluationMetrics = {
-      latencyMs,
-      promptTokens,
-      completionTokens,
-      totalTokens,
-      costUsd,
-    };
+      const metrics: EvaluationMetrics = {
+        latencyMs,
+        promptTokens,
+        completionTokens,
+        totalTokens,
+        costUsd,
+      };
 
-    return {
-      response: responseText,
-      metrics,
-    };
+      return {
+        response: responseText,
+        metrics,
+      };
+    } catch (error) {
+      console.error('Error using Google Generative AI:', error);
+      throw new Error(`Google API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 }
