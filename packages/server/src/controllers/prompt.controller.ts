@@ -26,7 +26,11 @@ export const getPromptById = asyncHandler(async (req: Request, res: Response) =>
     throw new Error('Prompt not found');
   }
   
-  res.json(prompt);
+  // Transform MongoDB _id to id for client consumption
+  const promptObj = prompt.toObject();
+  promptObj.id = promptObj._id.toString();
+  
+  res.json(promptObj);
 });
 
 // Create a new prompt
@@ -44,7 +48,11 @@ export const createPrompt = asyncHandler(async (req: Request, res: Response) => 
     tags: tags || [],
   });
   
-  res.status(201).json(prompt);
+  // Transform MongoDB _id to id for client consumption
+  const promptObj = prompt.toObject();
+  promptObj.id = promptObj._id.toString();
+  
+  res.status(201).json(promptObj);
 });
 
 // Update a prompt
@@ -62,7 +70,12 @@ export const updatePrompt = asyncHandler(async (req: Request, res: Response) => 
   prompt.tags = tags || prompt.tags;
   
   const updatedPrompt = await prompt.save();
-  res.json(updatedPrompt);
+  
+  // Transform MongoDB _id to id for client consumption
+  const promptObj = updatedPrompt.toObject();
+  promptObj.id = promptObj._id.toString();
+  
+  res.json(promptObj);
 });
 
 // Delete a prompt
