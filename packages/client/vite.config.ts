@@ -15,7 +15,7 @@ export default defineConfig({
     host: '0.0.0.0', // Allow connections from Docker
     proxy: {
       '/api': {
-        target: 'http://server:8000',
+        target: 'http://localhost:8001',
         changeOrigin: true,
       },
     },
