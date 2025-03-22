@@ -6,7 +6,15 @@ import { Prompt } from '@model-eval/shared';
 // Get all prompts
 export const getPrompts = asyncHandler(async (req: Request, res: Response) => {
   const prompts = await PromptModel.find().sort({ createdAt: -1 });
-  res.json(prompts);
+  
+  // Transform MongoDB _id to id for client consumption
+  const transformedPrompts = prompts.map(prompt => {
+    const promptObj = prompt.toObject();
+    promptObj.id = promptObj._id.toString();
+    return promptObj;
+  });
+  
+  res.json(transformedPrompts);
 });
 
 // Get prompt by ID
