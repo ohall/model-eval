@@ -24,7 +24,10 @@
   },
   "dependencies": {
     "@model-eval/client": "workspace:^",
+    "@model-eval/server": "workspace:^",
     "@react-oauth/google": "^0.12.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0"
   }
 }
