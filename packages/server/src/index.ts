@@ -21,6 +21,12 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 
+// Apply dev authentication middleware if in development mode
+if (NODE_ENV === 'development') {
+  const { devAuthMiddleware } = require('./middlewares/dev-auth.middleware');
+  app.use('/api', devAuthMiddleware);
+}
+
 // API Routes
 app.use('/api', routes);
 

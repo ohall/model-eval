@@ -97,6 +97,35 @@ const Login: React.FC = () => {
         <Text>Sign in to continue</Text>
         
         <Box>
+          {process.env.NODE_ENV === 'development' && (
+            <Box mb={4} p={3} borderWidth="1px" borderRadius="md" borderStyle="dashed" borderColor="gray.300">
+              <Text fontSize="sm" color="gray.500" mb={2}>Development Mode</Text>
+              <Button
+                size="sm"
+                colorScheme="teal"
+                width="full"
+                onClick={() => {
+                  const devUser = {
+                    id: 'dev-user-id',
+                    email: 'dev@example.com',
+                    name: 'Development User',
+                    provider: 'google' as const
+                  };
+                  login('dev-jwt-token', devUser);
+                  toast({
+                    title: 'Development login',
+                    description: 'Logged in with development account',
+                    status: 'info',
+                    duration: 3000,
+                    isClosable: true,
+                  });
+                }}
+              >
+                Skip Google Login (Dev Only)
+              </Button>
+            </Box>
+          )}
+        
           {error && (
             <Alert status="error" mb={4} borderRadius="md">
               <AlertIcon />

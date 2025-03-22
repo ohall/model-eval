@@ -44,6 +44,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Save token to localStorage
     localStorage.setItem('auth_token', token);
     
+    // Save user data to localStorage for development/demo mode
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    
     // Set user state
     setUser(userData);
     
@@ -52,8 +55,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
-    // Remove token from localStorage
+    // Remove token and user data from localStorage
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
     
     // Clear user state
     setUser(null);
@@ -68,6 +72,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!token) {
       setUser(null);
       return false;
+    }
+    
+    // Check if this is a development token
+    if (token.startsWith('dev-token-') || token === 'dev-jwt-token' || token === 'fake-jwt-token-for-demo') {
+      // For development only - pretend to be a valid user
+      // This is a way to bypass authentication for development/testing
+      const savedUserData = localStorage.getItem('user_data');
+      if (savedUserData) {
+        try {
+          const userData = JSON.parse(savedUserData);
+          setUser(userData);
+          return true;
+        } catch (e) {
+          console.error('Error parsing saved user data', e);
+        }
+      }
+      
+      // If no saved user data, use a default development user
+      setUser({
+        id: 'dev-user-id',
+        email: 'dev@example.com',
+        name: 'Development User',
+        provider: 'google',
+      });
+      return true;
     }
     
     try {
@@ -86,6 +115,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('Token validation failed', error);
+      
+      // For development/demo mode - instead of logging out, check if we should use a dev user
+      if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
+        console.log('Using development user because token validation failed');
+        setUser({
+          id: 'dev-user-id',
+          email: 'dev@example.com',
+          name: 'Development User',
+          provider: 'google',
+        });
+        return true;
+      }
+      
       logout();
       return false;
     }
