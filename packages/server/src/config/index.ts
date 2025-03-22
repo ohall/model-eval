@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { Provider, ProviderConfigs } from '@model-eval/shared';
+import { Provider, ProviderConfigs } from '../../shared/src/index';
 
 dotenv.config();
 

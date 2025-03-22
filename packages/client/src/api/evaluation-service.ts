@@ -1,4 +1,4 @@
-import { EvaluationResult, Provider, EvaluationSummary } from '@model-eval/shared';
+import { EvaluationResult, Provider, EvaluationSummary } from 'shared/index';
 import apiClient from './api-client';
 
 interface EvaluationRequest {

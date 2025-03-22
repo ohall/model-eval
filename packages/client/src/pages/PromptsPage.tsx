@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Container, Heading, SimpleGrid, Spinner, Text, useToast } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from 'shared/index';
 import { PromptService } from '../api';
 import PromptCard from '../components/PromptCard';
 

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { PromptModel, EvaluationModel } from '../models';
 import { generateResponseFromProvider } from '../services';
-import { Provider, EvaluationOptions, EvaluationSummary } from '@model-eval/shared';
+import { Provider, EvaluationOptions, EvaluationSummary } from '../../shared/src/index';
 import mongoose from 'mongoose';
 
 // Create a new evaluation
@@ -104,9 +104,9 @@ export const getEvaluationSummaryByPromptId = asyncHandler(async (req: Request, 
     throw new Error('No evaluations found for this prompt');
   }
   
-  const totalLatency = evaluations.reduce((acc, eval) => acc + eval.metrics.latencyMs, 0);
-  const totalTokens = evaluations.reduce((acc, eval) => acc + eval.metrics.totalTokens, 0);
-  const totalCost = evaluations.reduce((acc, eval) => acc + (eval.metrics.costUsd || 0), 0);
+  const totalLatency = evaluations.reduce((acc, result) => acc + result.metrics.latencyMs, 0);
+  const totalTokens = evaluations.reduce((acc, result) => acc + result.metrics.totalTokens, 0);
+  const totalCost = evaluations.reduce((acc, result) => acc + (result.metrics.costUsd || 0), 0);
   
   const summary: EvaluationSummary = {
     averageLatency: totalLatency / evaluations.length,

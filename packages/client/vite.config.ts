@@ -7,13 +7,15 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      'shared': path.resolve(__dirname, '../shared/src'),
     },
   },
   server: {
     port: 3000,
+    host: '0.0.0.0', // Allow connections from Docker
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://server:8000',
         changeOrigin: true,
       },
     },

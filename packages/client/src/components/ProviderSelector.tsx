@@ -20,7 +20,7 @@ import {
   Badge,
   useToast,
 } from '@chakra-ui/react';
-import { Provider } from '@model-eval/shared';
+import { Provider } from 'shared/index';
 import { useAppContext } from '../context/AppContext';
 import { ProviderService } from '../api';
 

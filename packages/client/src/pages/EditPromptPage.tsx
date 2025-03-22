@@ -3,7 +3,7 @@ import { Box, Container, Heading, Spinner, useToast } from '@chakra-ui/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PromptService } from '../api';
 import PromptForm from '../components/PromptForm';
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from 'shared/index';
 
 const EditPromptPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

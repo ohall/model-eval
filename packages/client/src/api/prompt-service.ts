@@ -1,4 +1,4 @@
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from 'shared/index';
 import apiClient from './api-client';
 
 export const PromptService = {

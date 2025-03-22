@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { PromptModel } from '../models';
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from '../../shared/src/index';
 
 // Get all prompts
 export const getPrompts = asyncHandler(async (req: Request, res: Response) => {

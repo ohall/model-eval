@@ -13,7 +13,7 @@ import {
   TagCloseButton,
   useToast,
 } from '@chakra-ui/react';
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from 'shared/index';
 
 interface PromptFormProps {
   initialValues?: Partial<Prompt>;

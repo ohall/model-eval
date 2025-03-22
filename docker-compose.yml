@@ -14,17 +14,20 @@ services:
       - app-network
 
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: base
+    image: node:18-alpine
     container_name: server
-    command: pnpm --filter @model-eval/server dev
+    working_dir: /app
+    command: >
+      sh -c "cd /app && 
+             npm install -g ts-node-dev typescript &&
+             npm install express mongoose dotenv cors helmet morgan winston express-async-handler anthropic openai @google/generative-ai &&
+             cd /app/server &&
+             npx ts-node-dev --transpile-only --respawn --ignore-watch node_modules src/index.ts"
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./packages/server:/app/server
+      - ./packages/shared:/app/shared
     depends_on:
       - mongodb
     environment:
@@ -36,22 +39,30 @@ services:
       - app-network
 
   client:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: base
+    image: node:18-alpine
     container_name: client
-    command: pnpm --filter @model-eval/client dev
+    working_dir: /app
+    command: >
+      sh -c "apk add --no-cache git &&
+             npm install -g pnpm &&
+             pnpm dlx create-vite@latest temp-client --template react-ts --yes &&
+             cp -r packages/shared /app/shared &&
+             cd /app/temp-client &&
+             npm install &&
+             npm install react-router-dom axios @chakra-ui/react @emotion/react @emotion/styled framer-motion react-query react-markdown react-syntax-highlighter react-toastify &&
+             cp -r /app/packages/client/src /app/temp-client/ &&
+             mkdir -p /app/temp-client/src/test &&
+             touch /app/temp-client/src/test/setup.ts &&
+             npm run dev -- --host 0.0.0.0"
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./packages:/app/packages
     depends_on:
       - server
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://localhost:8000/api
+      - VITE_API_URL=http://server:8000/api
     networks:
       - app-network
 

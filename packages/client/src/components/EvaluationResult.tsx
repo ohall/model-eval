@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, Heading, Divider, Stat, StatLabel, StatNumber, StatGroup, Badge, useColorModeValue } from '@chakra-ui/react';
-import { EvaluationResult } from '@model-eval/shared';
+import { EvaluationResult } from 'shared/index';
 import ReactMarkdown from 'react-markdown';
 
 interface EvaluationResultCardProps {

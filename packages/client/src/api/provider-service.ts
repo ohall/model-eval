@@ -1,4 +1,4 @@
-import { ProviderConfig } from '@model-eval/shared';
+import { ProviderConfig } from 'shared/index';
 import apiClient from './api-client';
 
 interface ProviderInfo {

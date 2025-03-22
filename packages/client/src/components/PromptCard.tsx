@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Heading, Text, Badge, HStack, Button, useColorModeValue } from '@chakra-ui/react';
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from 'shared/index';
 import { useNavigate } from 'react-router-dom';
 
 interface PromptCardProps {

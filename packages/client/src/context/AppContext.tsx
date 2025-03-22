@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Provider } from '@model-eval/shared';
+import { Provider } from 'shared/index';
 import { ProviderService } from '../api';
 
 interface ProviderSetting {

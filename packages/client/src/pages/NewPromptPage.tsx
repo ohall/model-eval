@@ -3,7 +3,7 @@ import { Box, Container, Heading, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { PromptService } from '../api';
 import PromptForm from '../components/PromptForm';
-import { Prompt } from '@model-eval/shared';
+import { Prompt } from 'shared/index';
 
 const NewPromptPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
