@@ -12,20 +12,27 @@ export class GoogleService {
   async generateResponse(prompt: string, options: Partial<EvaluationOptions>): Promise<{ response: string; metrics: EvaluationMetrics }> {
     const startTime = Date.now();
 
-    const model = this.client.getGenerativeModel({
-      model: options.model || 'gemini-pro',
-    });
+    try {
+      // Update model name to handle both formats (with or without version)
+      let modelName = options.model || 'gemini-1.5-pro';
+      
+      // Try to get available models
+      console.log(`Using Google model: ${modelName}`);
+      
+      const model = this.client.getGenerativeModel({
+        model: modelName,
+      });
 
-    const generationConfig = {
-      temperature: options.temperature || 0.7,
-      topP: options.topP || 0.95,
-      maxOutputTokens: options.maxTokens,
-    };
+      const generationConfig = {
+        temperature: options.temperature || 0.7,
+        topP: options.topP || 0.95,
+        maxOutputTokens: options.maxTokens,
+      };
 
-    const response = await model.generateContent({
-      contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig,
-    });
+      const response = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        generationConfig,
+      });
 
     const endTime = Date.now();
     const latencyMs = endTime - startTime;
