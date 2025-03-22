@@ -18,7 +18,7 @@ services:
     container_name: server
     working_dir: /app/server
     command: >
-      sh -c "npm install typescript ts-node-dev express mongoose dotenv cors helmet morgan winston express-async-handler anthropic openai @google/generative-ai zod &&
+      sh -c "npm install typescript ts-node-dev express mongoose dotenv cors helmet morgan winston express-async-handler @anthropic-ai/sdk openai @google/generative-ai zod &&
              ./node_modules/.bin/ts-node-dev --transpile-only --respawn src/index.ts"
     ports:
       - "8000:8000"

@@ -1,4 +1,4 @@
-import Anthropic from 'anthropic';
+import { Anthropic } from '@anthropic-ai/sdk';
 import { EvaluationMetrics, EvaluationOptions } from '../../shared/src/index';
 import { ANTHROPIC_API_KEY } from '../config';
 
