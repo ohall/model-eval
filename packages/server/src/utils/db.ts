@@ -13,7 +13,8 @@ export const connectDB = async () => {
       message = error.message;
     }
     logger.error(`Error connecting to MongoDB: ${message}`);
-    process.exit(1);
+    logger.warn('Continuing without MongoDB - some features will not work');
+    return null;
   }
 };
 

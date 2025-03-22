@@ -4,7 +4,7 @@ import { Provider, ProviderConfigs } from '@model-eval/shared';
 dotenv.config();
 
 // Server configuration
-export const PORT = process.env.PORT || 8000;
+export const PORT = process.env.PORT || 8001;
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/model-eval';
 export const CORS_ORIGINS = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'];
