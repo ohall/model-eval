@@ -1,0 +1,25 @@
+{
+  "name": "model-eval",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LLM evaluation tool for comparing performance across providers",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "packageManager": "pnpm@8.15.1",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\""
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "prettier": "^3.1.0",
+    "typescript": "^5.2.2"
+  }
+}
