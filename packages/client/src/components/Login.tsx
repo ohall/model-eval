@@ -70,15 +70,17 @@ const Login: React.FC = () => {
         <Box>
           <GoogleLogin
             onSuccess={handleGoogleLogin}
-            onError={() => {
+            onError={(errorResponse) => {
+              console.error('Google login error:', errorResponse);
               toast({
                 title: 'Login failed',
-                description: 'Google authentication failed',
+                description: 'Google authentication failed. Make sure your domain is authorized in Google Cloud Console.',
                 status: 'error',
                 duration: 5000,
                 isClosable: true,
               });
             }}
+            useOneTap
           />
         </Box>
       </VStack>

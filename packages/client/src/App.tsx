@@ -29,7 +29,10 @@ const queryClient = new QueryClient({
   },
 });
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+// Log client ID for debugging (remove in production)
+console.log("Google Client ID:", GOOGLE_CLIENT_ID);
 
 const App: React.FC = () => {
   return (
