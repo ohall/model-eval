@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserModel } from '../models';
 import { User } from 'shared/index';
+import { JWT_SECRET } from '../config';
 
 // Extend Express Request to include user property
 declare global {
@@ -11,9 +12,6 @@ declare global {
     }
   }
 }
-
-// Get JWT secret from environment or use a default (for development only)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {

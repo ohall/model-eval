@@ -3,10 +3,7 @@ import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { UserModel } from '../models';
-
-// Get JWT secret and Google Client ID from environment or use defaults (for development only)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+import { JWT_SECRET, GOOGLE_CLIENT_ID } from '../config';
 
 // Create a Google OAuth client
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
