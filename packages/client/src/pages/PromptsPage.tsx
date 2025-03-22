@@ -84,9 +84,9 @@ const PromptsPage: React.FC = () => {
         </Box>
       ) : (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-          {prompts.map(prompt => (
+          {prompts.map((prompt, index) => (
             <PromptCard 
-              key={prompt.id} 
+              key={prompt.id || `prompt-${index}`} 
               prompt={prompt} 
               onDelete={handleDeletePrompt}
             />

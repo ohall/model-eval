@@ -44,7 +44,7 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, onDelete }) => {
       
       <HStack mt={3} spacing={2}>
         {prompt.tags?.map((tag, index) => (
-          <Badge key={index} colorScheme="blue">
+          <Badge key={`${prompt.id || ''}-tag-${index}-${tag}`} colorScheme="blue">
             {tag}
           </Badge>
         ))}
