@@ -150,8 +150,8 @@ const EvaluatePromptPage: React.FC = () => {
           
           <Heading size="md" mb={4}>Evaluation Results</Heading>
           <VStack spacing={4} align="stretch">
-            {results.map((result) => (
-              <EvaluationResultCard key={result.id} evaluation={result} />
+            {results.map((result, index) => (
+              <EvaluationResultCard key={result.id || `result-${index}`} evaluation={result} />
             ))}
           </VStack>
         </>
