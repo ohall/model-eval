@@ -16,13 +16,10 @@ services:
   server:
     image: node:18-alpine
     container_name: server
-    working_dir: /app
+    working_dir: /app/server
     command: >
-      sh -c "cd /app && 
-             npm install -g ts-node-dev typescript &&
-             npm install express mongoose dotenv cors helmet morgan winston express-async-handler anthropic openai @google/generative-ai &&
-             cd /app/server &&
-             npx ts-node-dev --transpile-only --respawn --ignore-watch node_modules src/index.ts"
+      sh -c "npm install typescript ts-node-dev express mongoose dotenv cors helmet morgan winston express-async-handler anthropic openai @google/generative-ai zod &&
+             ./node_modules/.bin/ts-node-dev --transpile-only --respawn src/index.ts"
     ports:
       - "8000:8000"
     volumes:
