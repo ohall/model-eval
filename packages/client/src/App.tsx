@@ -38,7 +38,7 @@ const App: React.FC = () => {
   return (
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} onScriptLoadError={() => console.error("Google script failed to load")}>
           <AuthProvider>
             <AppProvider>
               <Router>

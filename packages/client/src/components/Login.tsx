@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Button, Center, Heading, Text, VStack, useToast } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { Box, Button, Center, Heading, Text, VStack, useToast, Alert, AlertIcon, AlertTitle, AlertDescription } from '@chakra-ui/react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
@@ -12,6 +12,7 @@ interface GoogleCredentialResponse {
 const Login: React.FC = () => {
   const { login } = useAuth();
   const toast = useToast();
+  const [error, setError] = useState<string | null>(null);
 
   const handleGoogleLogin = async (credentialResponse: GoogleCredentialResponse) => {
     try {
@@ -68,19 +69,45 @@ const Login: React.FC = () => {
         <Text>Sign in to continue</Text>
         
         <Box>
+          {error && (
+            <Alert status="error" mb={4} borderRadius="md">
+              <AlertIcon />
+              <Box>
+                <AlertTitle>Authentication Error</AlertTitle>
+                <AlertDescription>
+                  {error}
+                  <Button 
+                    mt={2} 
+                    size="sm" 
+                    colorScheme="red" 
+                    onClick={() => setError(null)}
+                  >
+                    Try Again
+                  </Button>
+                </AlertDescription>
+              </Box>
+            </Alert>
+          )}
+          
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={(errorResponse) => {
               console.error('Google login error:', errorResponse);
+              setError('Google authentication failed. Please try again using a different browser or clear your cookies.');
               toast({
                 title: 'Login failed',
-                description: 'Google authentication failed. Make sure your domain is authorized in Google Cloud Console.',
+                description: 'Google authentication failed. See troubleshooting info below.',
                 status: 'error',
                 duration: 5000,
                 isClosable: true,
               });
             }}
-            useOneTap
+            type="standard"
+            theme="filled_blue"
+            size="large"
+            shape="rectangular"
+            logo_alignment="center"
+            text="signin_with"
           />
         </Box>
       </VStack>

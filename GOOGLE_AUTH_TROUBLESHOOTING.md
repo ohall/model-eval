@@ -97,3 +97,35 @@ If all else fails:
 4. Try in an incognito/private browser window
 
 Remember that changes to Google Cloud Console settings may take a few minutes to propagate.
+
+## FedCM and AbortError Issues
+
+If you see errors related to "FedCM" or "AbortError: signal is aborted without reason", these are typically related to the newer Federated Credential Management API that Google is migrating to.
+
+**Solutions:**
+
+1. **Use standard button type instead of One Tap:**
+   - Modify your GoogleLogin component to use standard button styling instead of OneTap:
+   ```jsx
+   <GoogleLogin
+     onSuccess={handleLogin}
+     onError={handleError}
+     type="standard"
+     theme="filled_blue"
+     size="large"
+     shape="rectangular"
+     text="signin_with"
+   />
+   ```
+
+2. **Clear browser cache and cookies:**
+   - Clear all Google-related cookies and cache from your browser
+   - Try using incognito/private browsing mode
+
+3. **Check browser compatibility:**
+   - Some browsers may have different support levels for the FedCM API
+   - Try using Chrome, which has the best support for Google Sign-In
+   
+4. **Use a different Google account:**
+   - Some Google account settings can affect the FedCM experience
+   - Try with a different Google account
