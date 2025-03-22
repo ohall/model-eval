@@ -9,6 +9,10 @@ export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/model-eval';
 export const CORS_ORIGINS = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000'];
 
+// Auth configuration
+export const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+
 // Provider API keys
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 export const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
