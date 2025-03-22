@@ -29,7 +29,7 @@ const SelectedProviders: React.FC = () => {
       <Text fontWeight="bold" mb={3}>Selected Providers:</Text>
       <VStack spacing={3} align="stretch">
         {selectedProviders.map((provider, index) => (
-          <Box key={index} p={3} borderWidth="1px" borderRadius="md" bg={useColorModeValue('white', 'gray.600')}>
+          <Box key={index} p={3} borderWidth="1px" borderRadius="md" bg={itemBgColor}>
             <HStack justifyContent="space-between">
               <HStack>
                 <Badge colorScheme="green" fontSize="md">
