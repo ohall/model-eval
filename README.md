@@ -44,7 +44,7 @@ This is a TypeScript monorepo with the following packages:
 ### Prerequisites
 
 - Node.js (v18 or higher)
-- MongoDB
+- MongoDB (optional - some features require a MongoDB connection)
 - PNPM package manager (`npm install -g pnpm`)
 - API keys for at least one of the supported LLM providers:
   - OpenAI: https://platform.openai.com/api-keys
@@ -69,6 +69,9 @@ This is a TypeScript monorepo with the following packages:
    # In packages/server directory
    cp .env.example .env
    # Edit .env and add your API keys and other configuration
+   
+   # Important: If port 8000 is already in use, change PORT to another value (e.g., 8001)
+   # If MongoDB is unavailable, the server will continue to run with limited functionality
    ```
 
 4. Start the development servers:
@@ -90,7 +93,7 @@ You can also run the application using Docker and Docker Compose:
 
 The application will be available at:
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
+- Backend API: http://localhost:8000 (or the port you specified in the .env file)
 
 ### Workflow
 
@@ -103,9 +106,12 @@ The application will be available at:
 ## Development
 
 - Build all packages: `pnpm build`
+- Build shared package only: `cd packages/shared && npm run build`
 - Run tests: `pnpm test`
 - Lint code: `pnpm lint`
 - Format code: `pnpm format`
+
+Note: Always build the shared package before starting the server if you've made changes to it.
 
 ## API Endpoints
 
