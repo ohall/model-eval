@@ -30,7 +30,7 @@ const queryClient = new QueryClient({
 });
 
 // Google OAuth Client ID - replace with your actual client ID
-const GOOGLE_CLIENT_ID = "634132806876-5il52io0496rekm39ok4aidjfnuiqfnb.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const App: React.FC = () => {
   return (
