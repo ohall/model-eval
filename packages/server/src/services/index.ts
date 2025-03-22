@@ -1,4 +1,4 @@
-import { Provider, EvaluationOptions } from '../../shared/src/index';
+import { Provider, EvaluationOptions } from '@model-eval/shared';
 import { OpenAIService } from './openai.service';
 import { AnthropicService } from './anthropic.service';
 import { GoogleService } from './google.service';

@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { EvaluationMetrics, EvaluationOptions } from '../../shared/src/index';
+import { EvaluationMetrics, EvaluationOptions } from '@model-eval/shared';
 import { GOOGLE_API_KEY } from '../config';
 
 export class GoogleService {

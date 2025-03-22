@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Prompt } from '../../shared/src/index';
+import { Prompt } from '@model-eval/shared';
 
 const promptSchema = new mongoose.Schema(
   {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
-import { Provider } from '../../shared/src/index';
+import { Provider } from '@model-eval/shared';
 import { providerConfigs } from '../config';
 
 // Get available providers and their configs (without API keys)

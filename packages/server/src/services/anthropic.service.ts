@@ -1,5 +1,5 @@
 import { Anthropic } from '@anthropic-ai/sdk';
-import { EvaluationMetrics, EvaluationOptions } from '../../shared/src/index';
+import { EvaluationMetrics, EvaluationOptions } from '@model-eval/shared';
 import { ANTHROPIC_API_KEY } from '../config';
 
 export class AnthropicService {

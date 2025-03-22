@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { EvaluationResult, Provider } from '../../shared/src/index';
+import { EvaluationResult, Provider } from '@model-eval/shared';
 
 const metricSchema = new mongoose.Schema(
   {

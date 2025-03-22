@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { PromptModel, EvaluationModel } from '../models';
 import { generateResponseFromProvider } from '../services';
-import { Provider, EvaluationOptions, EvaluationSummary } from '../../shared/src/index';
+import { Provider, EvaluationOptions, EvaluationSummary } from '@model-eval/shared';
 import mongoose from 'mongoose';
 
 // Create a new evaluation
