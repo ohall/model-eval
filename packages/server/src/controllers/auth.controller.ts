@@ -65,11 +65,11 @@ export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({
       user: {
         id: user._id.toString(),
-        email: user.email,
-        name: user.name || '',
-        picture: user.picture || '',
-        providerId: user.providerId || '',
-        provider: user.provider,
+        email: user.get('email') || '',
+        name: user.get('name') || '',
+        picture: user.get('picture') || '',
+        providerId: user.get('providerId') || '',
+        provider: user.get('provider') as 'google',
       },
       token,
     });
@@ -89,13 +89,6 @@ export const validateToken = asyncHandler(async (req: Request, res: Response) =>
   
   res.status(200).json({
     valid: true,
-    user: {
-      id: req.user.id,
-      email: req.user.email,
-      name: req.user.name,
-      picture: req.user.picture,
-      providerId: req.user.providerId,
-      provider: req.user.provider,
-    },
+    user: req.user,
   });
 });

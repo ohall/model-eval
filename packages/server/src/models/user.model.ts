@@ -1,7 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { User } from 'shared/index';
 
-export interface UserDocument extends User, Document {
+// Omit 'id' from User to avoid conflict with Document's '_id'
+export interface UserDocument extends Omit<User, 'id'>, Document {
   createdAt: Date;
   updatedAt: Date;
 }
