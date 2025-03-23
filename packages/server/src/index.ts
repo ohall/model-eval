@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
+import rateLimit from 'express-rate-limit';
 
 import { PORT, CORS_ORIGINS, NODE_ENV } from './config';
 import { connectDB, logger, notFound, errorHandler } from './utils';
@@ -95,12 +96,45 @@ app.use(helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://accounts.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
+      formAction: ["'self'"],
+      baseUri: ["'self'"],
+      frameAncestors: ["'none'"],
     },
   },
   crossOriginEmbedderPolicy: false,
   crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginOpenerPolicy: { policy: "unsafe-none" }
+  crossOriginOpenerPolicy: { policy: "unsafe-none" },
+  dnsPrefetchControl: { allow: false },
+  frameguard: { action: 'deny' },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  ieNoOpen: true,
+  noSniff: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  xssFilter: true,
+  hidePoweredBy: true,
+  strictTransportSecurity: true
 }));
+
+// Add rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all routes
+app.use(limiter);
+
+// Add request size limits
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
 // Add Heroku domain to CORS if not already included
 let corsOrigins = CORS_ORIGINS;
 if (NODE_ENV === 'production') {
@@ -118,7 +152,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-app.use(express.json());
+
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 
 // Initialize asset mapping for all known files
