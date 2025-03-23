@@ -103,10 +103,43 @@ app.get('/debug', (req, res) => {
   });
 });
 
+// Create a simple static HTML page in case client files are missing
+const createFallbackPage = () => {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <title>Model Evaluation Platform</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { color: #333; }
+    .error { background: #ffebee; border: 1px solid #ffcdd2; padding: 15px; border-radius: 4px; }
+    .api { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 4px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Model Evaluation Platform</h1>
+  <div class="error">
+    <h2>Client files not found</h2>
+    <p>The application is running, but the client build files could not be found. Please check the build process.</p>
+  </div>
+  <div class="api">
+    <h2>API Endpoints</h2>
+    <p>The API is still available at the following endpoints:</p>
+    <ul>
+      <li><a href="/api/providers">/api/providers</a> - Get available model providers</li>
+      <li><a href="/health">/health</a> - Check API health</li>
+      <li><a href="/debug">/debug</a> - View debug information</li>
+    </ul>
+  </div>
+</body>
+</html>`;
+};
+
 // Serve static files from the client build in production
 if (NODE_ENV === 'production') {
   // Define the static folder path - first check if client dist exists at expected path
   let staticPath = path.resolve(__dirname, '../../client/dist');
+  let clientFilesFound = false;
   
   // Fallback paths for Heroku deployment
   if (!fs.existsSync(staticPath)) {
@@ -115,31 +148,67 @@ if (NODE_ENV === 'production') {
       path.resolve(process.cwd(), 'packages/client/dist'),
       path.resolve(process.cwd(), '../client/dist'),
       path.resolve(process.cwd(), '../../client/dist'),
-      path.resolve(process.cwd(), 'client/dist')
+      path.resolve(process.cwd(), 'client/dist'),
+      path.resolve(process.cwd(), 'dist')
     ];
     
     for (const alt of alternatives) {
       if (fs.existsSync(alt)) {
-        staticPath = alt;
-        logger.info(`Using static path: ${staticPath}`);
-        break;
+        const hasIndexHtml = fs.existsSync(path.join(alt, 'index.html'));
+        if (hasIndexHtml) {
+          staticPath = alt;
+          clientFilesFound = true;
+          logger.info(`Using static path: ${staticPath}`);
+          break;
+        } else {
+          logger.warn(`Found directory at ${alt} but it doesn't contain index.html`);
+        }
       }
+    }
+  } else {
+    clientFilesFound = fs.existsSync(path.join(staticPath, 'index.html'));
+    if (!clientFilesFound) {
+      logger.warn(`Found directory at ${staticPath} but it doesn't contain index.html`);
     }
   }
   
-  // Set up static file serving
-  app.use(express.static(staticPath));
-  
-  // Serve index.html for any non-API routes to support client-side routing
-  app.get('*', (req, res) => {
-    const indexPath = path.join(staticPath, 'index.html');
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      logger.error(`index.html not found at ${indexPath}`);
-      res.status(404).send('Client build not found. Make sure to build the client before deploying.');
-    }
-  });
+  if (clientFilesFound) {
+    // Set up static file serving
+    logger.info(`Serving static files from: ${staticPath}`);
+    app.use(express.static(staticPath));
+    
+    // Serve index.html for any non-API routes to support client-side routing
+    app.get('*', (req, res, next) => {
+      // Skip API routes and special paths
+      if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug') {
+        return next();
+      }
+      
+      const indexPath = path.join(staticPath, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+      } else {
+        logger.error(`index.html not found at ${indexPath}`);
+        next(); // Let the fallback handler deal with it
+      }
+    });
+  } else {
+    // If client files not found, serve a fallback page for all non-API routes
+    logger.error('Client build files not found. Serving fallback page.');
+    
+    app.get('/', (req, res) => {
+      res.send(createFallbackPage());
+    });
+    
+    app.get('*', (req, res, next) => {
+      // Skip API routes and special paths
+      if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug') {
+        return next();
+      }
+      
+      res.redirect('/');
+    });
+  }
 }
 
 // Error handling
