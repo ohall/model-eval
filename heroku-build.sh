@@ -7,10 +7,6 @@ set -e
 echo "Installing pnpm..."
 npm install -g pnpm@8.15.1
 
-# Set exact Node.js version in .npmrc
-echo "Setting exact Node.js version in .npmrc..."
-echo "use-node-version=18.20.7" >> .npmrc
-
 # Install dependencies
 echo "Installing dependencies..."
 pnpm install
@@ -32,5 +28,9 @@ echo "Building server..."
 cd packages/server
 pnpm build
 cd ../..
+
+# Debug: List contents of client dist
+echo "Checking client build..."
+ls -la packages/client/dist
 
 echo "Build completed successfully!"

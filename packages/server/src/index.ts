@@ -12,6 +12,41 @@ import routes from './routes';
 // Connect to MongoDB
 connectDB();
 
+// Verify production build setup
+if (NODE_ENV === 'production') {
+  const rootDir = process.cwd();
+  logger.info(`Working directory: ${rootDir}`);
+  
+  // Check client build directories
+  const clientPaths = [
+    path.resolve(rootDir, 'packages/client/dist'),
+    path.resolve(rootDir, 'client/dist'),
+    path.resolve(rootDir, 'dist'),
+    path.resolve(__dirname, '../../client/dist')
+  ];
+  
+  for (const p of clientPaths) {
+    if (fs.existsSync(p)) {
+      logger.info(`Found client build at: ${p}`);
+      try {
+        const files = fs.readdirSync(p);
+        logger.info(`Client build files: ${files.join(', ')}`);
+        
+        // Check for index.html specifically
+        if (files.includes('index.html')) {
+          logger.info(`✓ index.html found`);
+        } else {
+          logger.warn(`✗ index.html NOT found in ${p}`);
+        }
+      } catch (err) {
+        logger.error(`Error reading client build directory: ${err}`);
+      }
+    } else {
+      logger.warn(`Client build NOT found at: ${p}`);
+    }
+  }
+}
+
 const app = express();
 
 // Middleware

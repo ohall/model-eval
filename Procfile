@@ -1,1 +1,1 @@
-web: cd packages/server && pnpm start
+web: cd /app && NODE_ENV=production cd packages/server && pnpm start
