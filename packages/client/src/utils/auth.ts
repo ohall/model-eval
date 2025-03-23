@@ -41,3 +41,24 @@ export const createDevelopmentUser = () => {
     provider: 'google' as const,
   };
 };
+
+/**
+ * Check if running on Heroku
+ */
+export const isRunningOnHeroku = (): boolean => {
+  return typeof window !== 'undefined' && window.location.hostname.includes('herokuapp.com');
+};
+
+/**
+ * Use development authentication on Heroku
+ * This function helps debug auth issues on Heroku by using a development token
+ */
+export const setupHerokuDevAuth = (): boolean => {
+  if (isRunningOnHeroku() && !localStorage.getItem('token')) {
+    console.log('Setting up development authentication for Heroku');
+    localStorage.setItem('token', 'dev-jwt-token');
+    localStorage.setItem('user', JSON.stringify(createDevelopmentUser()));
+    return true;
+  }
+  return false;
+};

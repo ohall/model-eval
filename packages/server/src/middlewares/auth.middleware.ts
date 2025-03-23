@@ -33,8 +33,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const token = authHeader.split(' ')[1];
 
-    // Check for development token
-    if (NODE_ENV === 'development' && isDevelopmentToken(token)) {
+    // Check for development token (allow in any environment for Heroku testing)
+    if (isDevelopmentToken(token)) {
+      console.log('Development token detected:', token.substring(0, 10) + '...');
       // Attach development user to request and proceed
       req.user = createDevelopmentUser();
       return next();

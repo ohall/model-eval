@@ -30,16 +30,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedToken = localStorage.getItem('token');
     
     if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-      
-      // Set up axios default header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        console.log('Restored auth session:', { 
+          tokenLength: storedToken.length,
+          user: parsedUser 
+        });
+        setUser(parsedUser);
+        setToken(storedToken);
+        
+        // Set up axios default header
+        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        // Clear invalid data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      }
+    } else {
+      console.log('No stored auth session found');
     }
     setIsLoading(false);
   }, []);
 
   const login = (newToken: string, userData: User) => {
+    console.log('Login called with:', {
+      tokenLength: newToken.length,
+      tokenPreview: newToken.substring(0, 10) + '...',
+      user: userData
+    });
+    
     setUser(userData);
     setToken(newToken);
     
@@ -49,6 +69,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Set up axios default header
     axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+    
+    console.log('Authentication set up complete');
   };
 
   const logout = () => {
