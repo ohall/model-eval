@@ -6,6 +6,7 @@ import logger from '../utils/logger';
 
 // Get all prompts
 export const getPrompts = asyncHandler(async (req: Request, res: Response) => {
+  logger.debug('Fetching all prompts');
   const prompts = await PromptModel.find().sort({ createdAt: -1 });
   
   // Transform MongoDB _id to id for client consumption
@@ -20,6 +21,7 @@ export const getPrompts = asyncHandler(async (req: Request, res: Response) => {
 
 // Get prompt by ID
 export const getPromptById = asyncHandler(async (req: Request, res: Response) => {
+  logger.debug({ promptId: req.params.id }, 'Fetching prompt by ID');
   const prompt = await PromptModel.findById(req.params.id);
   
   if (!prompt) {
@@ -43,6 +45,7 @@ export const createPrompt = asyncHandler(async (req: Request, res: Response) => 
     throw new Error('Title and content are required');
   }
   
+  logger.info({ title, contentLength: content.length, tags }, 'Creating new prompt');
   const prompt = await PromptModel.create({
     title,
     content,
@@ -70,6 +73,7 @@ export const updatePrompt = asyncHandler(async (req: Request, res: Response) => 
   prompt.content = content || prompt.content;
   prompt.tags = tags || prompt.tags;
   
+  logger.info({ promptId: req.params.id, title: prompt.title, contentLength: prompt.content.length, tags: prompt.tags }, 'Updating prompt');
   const updatedPrompt = await prompt.save();
   
   // Transform MongoDB _id to id for client consumption
@@ -88,6 +92,7 @@ export const deletePrompt = asyncHandler(async (req: Request, res: Response) => 
     throw new Error('Prompt not found');
   }
   
+  logger.info({ promptId: req.params.id }, 'Deleting prompt');
   await PromptModel.deleteOne({ _id: req.params.id });
   res.json({ message: 'Prompt removed' });
 });

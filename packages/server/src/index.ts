@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
@@ -148,10 +147,7 @@ app.use(helmet({
   hidePoweredBy: true
 }));
 
-// Use morgan for HTTP logging (will replace with Pino request logger)
-app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
-
-// Add Pino request logger middleware
+// Add Pino request logger middleware for HTTP request logging
 import { requestLogger } from './utils/logger';
 app.use(requestLogger());
 
