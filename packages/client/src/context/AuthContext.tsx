@@ -1,151 +1,76 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from 'shared/index';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { isDevelopmentMode, isDevelopmentToken, createDevelopmentUser } from '../utils';
+
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+  picture?: string;
+}
 
 interface AuthContextType {
   user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (token: string, userData: any) => void;
+  token: string | null;
+  login: (token: string, userData: User) => void;
   logout: () => void;
-  checkAuth: () => Promise<boolean>;
+  isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isAuthenticated: false,
-  isLoading: true,
-  login: () => {},
-  logout: () => {},
-  checkAuth: async () => false,
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => useContext(AuthContext);
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
 
-  // Check if token exists in localStorage on mount
   useEffect(() => {
-    const checkToken = async () => {
-      try {
-        await checkAuth();
-      } catch (error) {
-        console.error('Auth check error:', error);
-        // In development, allow proceeding with a default user
-        if (isDevelopmentMode()) {
-          setUser(createDevelopmentUser());
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Check for stored auth data on mount
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
     
-    checkToken();
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+      
+      // Set up axios default header
+      axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+    }
   }, []);
 
-  const login = (token: string, userData: any) => {
-    // Save token to localStorage
-    localStorage.setItem('auth_token', token);
-    
-    // Save user data to localStorage for development/demo mode
-    localStorage.setItem('user_data', JSON.stringify(userData));
-    
-    // Set user state
+  const login = (newToken: string, userData: User) => {
     setUser(userData);
+    setToken(newToken);
     
-    // Set auth header for future requests
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    // Store in localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', newToken);
+    
+    // Set up axios default header
+    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
   };
 
   const logout = () => {
-    // Remove token and user data from localStorage
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-    
-    // Clear user state
     setUser(null);
+    setToken(null);
     
-    // Remove auth header
+    // Clear localStorage
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    
+    // Remove axios default header
     delete axios.defaults.headers.common['Authorization'];
   };
 
-  const checkAuth = async (): Promise<boolean> => {
-    const token = localStorage.getItem('auth_token');
-    
-    if (!token) {
-      setUser(null);
-      return false;
-    }
-    
-    // Check if this is a development token
-    if (isDevelopmentToken(token)) {
-      // For development only - pretend to be a valid user
-      // This is a way to bypass authentication for development/testing
-      const savedUserData = localStorage.getItem('user_data');
-      if (savedUserData) {
-        try {
-          const userData = JSON.parse(savedUserData);
-          setUser(userData);
-          return true;
-        } catch (e) {
-          console.error('Error parsing saved user data', e);
-        }
-      }
-      
-      // If no saved user data, use a default development user
-      setUser({
-        id: 'dev-user-id',
-        email: 'dev@example.com',
-        name: 'Development User',
-        provider: 'google',
-      });
-      return true;
-    }
-    
-    try {
-      // Set auth header for the validation request
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      // Make a request to validate the token
-      const response = await axios.get('/api/auth/validate');
-      
-      if (response.data && response.data.valid) {
-        setUser(response.data.user);
-        return true;
-      } else {
-        logout();
-        return false;
-      }
-    } catch (error) {
-      console.error('Token validation failed', error);
-      
-      // For development/demo mode - instead of logging out, check if we should use a dev user
-      if (isDevelopmentMode()) {
-        console.log('Using development user because token validation failed');
-        setUser(createDevelopmentUser());
-        return true;
-      }
-      
-      logout();
-      return false;
-    }
-  };
+  return (
+    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!user }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-  const value = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout,
-    checkAuth,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

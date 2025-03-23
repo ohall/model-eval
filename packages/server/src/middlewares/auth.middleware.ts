@@ -1,74 +1,69 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
+import { GOOGLE_CLIENT_ID } from '../config';
 import { UserModel } from '../models';
-import { User } from 'shared/index';
-import { JWT_SECRET, NODE_ENV } from '../config';
-import { isDevelopmentToken, createDevelopmentUser } from '../utils';
 
-// Extend Express Request to include user property
+// Create a Google OAuth client
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+// Extend Express Request type to include user
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user?: {
+        id: string;
+        email: string;
+        name?: string;
+        picture?: string;
+      };
     }
   }
 }
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  // Skip authentication in development mode
-  if (NODE_ENV === 'development') {
-    // If user is already set by another middleware (like devAuthMiddleware), use it
-    if (!req.user) {
-      // Set a default development user
-      req.user = createDevelopmentUser();
-    }
-    return next();
-  }
-  
   try {
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
-    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'Unauthorized - No token provided' });
+      return res.status(401).json({ message: 'No token provided' });
     }
-    
-    // Extract token
+
     const token = authHeader.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized - Invalid token format' });
+
+    // Verify the token
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(401).json({ message: 'Invalid token' });
     }
-    
-    // Special handling for development tokens
-    if (isDevelopmentToken(token)) {
-      req.user = createDevelopmentUser();
-      return next();
-    }
-    
-    // Verify token
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    
-    // Find user by ID
-    const user = await UserModel.findById(decoded.id).lean();
-    
+
+    // Find or create user
+    let user = await UserModel.findOne({ email: payload.email });
     if (!user) {
-      return res.status(401).json({ message: 'Unauthorized - User not found' });
+      user = await UserModel.create({
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+        providerId: payload.sub,
+        provider: 'google',
+      });
     }
-    
-    // Attach user to request object
+
+    // Attach user to request
     req.user = {
       id: user._id.toString(),
-      email: user.email || '',
-      name: user.name || '',
-      picture: user.picture || '',
-      providerId: user.providerId || '',
-      provider: user.provider as 'google'
+      email: user.email,
+      name: user.name,
+      picture: user.picture,
     };
-    
+
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
-    return res.status(401).json({ message: 'Unauthorized - Invalid token' });
+    res.status(401).json({ message: 'Invalid token' });
   }
 };

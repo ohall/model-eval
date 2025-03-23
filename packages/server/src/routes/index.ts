@@ -1,9 +1,9 @@
 import express from 'express';
+import { authMiddleware } from '../middlewares/auth.middleware';
+import authRoutes from './auth.routes';
 import promptRoutes from './prompt.routes';
 import evaluationRoutes from './evaluation.routes';
 import providerRoutes from './provider.routes';
-import authRoutes from './auth.routes';
-import { authMiddleware } from '../middlewares/auth.middleware';
 
 const router = express.Router();
 
