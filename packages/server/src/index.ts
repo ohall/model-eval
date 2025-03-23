@@ -200,8 +200,58 @@ for (const staticPath of clientDistPaths) {
   }
 }
 
+// Block access to sensitive paths
+const sensitiveEndpoints = [
+  /^\/api\/users\/?.*$/,
+  /^\/api\/admin\/?.*$/,
+  /^\/api\/config\/?.*$/,
+  /^\/admin\/?.*$/,
+  /^\/\.env$/,
+  /^\/\.git\/?.*$/,
+  /^\/\.github\/?.*$/,
+  /^\/\.vscode\/?.*$/,
+  /^\/node_modules\/?.*$/,
+  /^\/package\.json$/,
+  /^\/package-lock\.json$/,
+  /^\/pnpm-lock\.yaml$/,
+  /^\/api\/auth\/users\/?.*$/,
+  /^\/api\/v1\/users\/?.*$/,
+];
+
+// Block sensitive endpoints that aren't part of our actual API
+app.use((req, res, next) => {
+  // Skip if the path is handled by our actual API routes
+  if (req.path.startsWith('/api/') && 
+      req.path !== '/api/users' && 
+      req.path !== '/api/admin' && 
+      req.path !== '/api/config' && 
+      !req.path.startsWith('/api/auth/users') && 
+      !req.path.startsWith('/api/v1/')) {
+    return next();
+  }
+  
+  // Block access to sensitive endpoints
+  for (const pattern of sensitiveEndpoints) {
+    if (pattern.test(req.path)) {
+      logger.warn(`Blocked access to sensitive endpoint: ${req.path}`);
+      return res.status(403).json({ 
+        message: 'Access forbidden',
+        status: 403,
+        success: false
+      });
+    }
+  }
+  
+  next();
+});
+
 // Serve React app for all other routes (SPA)
-app.get('*', (req, res) => {
+app.get('*', (req, res, next) => {
+  // Skip this handler for paths that look like file requests or sensitive paths
+  if (req.path.includes('.') || req.path.startsWith('/.')) {
+    return next();
+  }
+  
   // Try multiple potential paths for index.html
   const possiblePaths = [
     path.resolve(process.cwd(), 'packages/client/dist/index.html'),
