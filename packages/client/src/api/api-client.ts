@@ -1,8 +1,36 @@
 import axios, { AxiosInstance } from 'axios';
 
+// Determine base URL
+const getBaseUrl = () => {
+  // Check for runtime environment variables first (set by Heroku)
+  if (window.ENV?.API_URL) {
+    return window.ENV.API_URL;
+  }
+  
+  // Then check for build-time environment variables
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // Check for Heroku-specific environment variable
+  if (import.meta.env.VITE_HEROKU_URL) {
+    return `${import.meta.env.VITE_HEROKU_URL}/api`;
+  }
+  
+  // Check if we're on the Heroku domain
+  const isHerokuDomain = window.location.hostname.includes('herokuapp.com');
+  if (isHerokuDomain) {
+    // Use the current origin as the base
+    return `${window.location.origin}/api`;
+  }
+  
+  // Default to relative path
+  return '/api';
+};
+
 // Create axios instance with defaults
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
