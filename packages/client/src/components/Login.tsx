@@ -34,6 +34,7 @@ const Login: React.FC = () => {
         if (response.data && response.data.token) {
           // Create a user object from the decoded JWT
           const userData = {
+            id: decodedUser.sub, // Use sub as the ID
             email: decodedUser.email,
             name: decodedUser.name,
             picture: decodedUser.picture,
