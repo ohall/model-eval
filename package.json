@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "LLM evaluation tool for comparing performance across providers",
+  "volta": {
+    "node": "18.20.7"
+  },
   "engines": {
     "node": "18.20.7",
     "pnpm": "8.15.1"

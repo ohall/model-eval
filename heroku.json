@@ -1,0 +1,18 @@
+{
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs.git"
+    }
+  ],
+  "env": {
+    "NPM_CONFIG_PRODUCTION": {
+      "value": "false"
+    },
+    "NODE_ENV": {
+      "value": "production"
+    },
+    "NODE_OPTIONS": {
+      "value": "--max_old_space_size=2560"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "model-eval-heroku",
+  "engines": {
+    "node": "18.20.7",
+    "npm": "9.8.1"
+  }
+}
