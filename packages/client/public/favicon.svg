@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#4A5568"/>
+  
+  <!-- Graph bars representing evaluation -->
+  <rect x="8" y="20" width="3" height="8" fill="#A0AEC0"/>
+  <rect x="14" y="16" width="3" height="12" fill="#A0AEC0"/>
+  <rect x="20" y="12" width="3" height="16" fill="#A0AEC0"/>
+  
+  <!-- Comparison arrows -->
+  <path d="M6 16L10 12M26 16L22 12M6 16L10 20M26 16L22 20" 
+        stroke="#A0AEC0" 
+        stroke-width="2" 
+        stroke-linecap="round"/>
+</svg> 
