@@ -173,7 +173,6 @@ window.ENV = {
   ENV: "${process.env.NODE_ENV || 'development'}",
   APP_VERSION: "${new Date().toISOString()}"
 };
-console.log('Environment loaded:', window.ENV);
 `;
 
   // Add environment.js to all directories
