@@ -68,7 +68,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     next();
   } catch (error) {
-    logger.error({ error, token: authHeader?.split(' ')[1]?.substring(0, 10) + '...' }, 'Auth middleware error');
+    // Get token from the Authorization header for logging, but be careful not to log the full token
+    const token = req.headers.authorization?.split(' ')[1];
+    const tokenPreview = token ? `${token.substring(0, 10)}...` : 'none';
+    logger.error({ error, tokenPreview }, 'Auth middleware error');
     res.status(401).json({ message: 'Invalid token' });
   }
 };
