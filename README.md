@@ -142,3 +142,5 @@ Additional documentation is available in the [docs](docs) directory:
 
 - [Heroku Deployment Guide](docs/README-HEROKU.md) - Instructions for deploying to Heroku
 - [Detailed Heroku Setup](docs/HEROKU_DEPLOYMENT.md) - Comprehensive guide for Heroku deployment
+- [Development Authentication](docs/DEV_AUTH_README.md) - Guide for setting up authentication in development
+- [Prompt Documentation](docs/PROMPT.md) - Documentation about the prompt system
