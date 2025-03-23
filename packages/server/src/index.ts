@@ -17,9 +17,8 @@ connectDB();
 // Verify production build setup
 if (NODE_ENV === 'production') {
   const rootDir = process.cwd();
-  logger.info(`Working directory: ${rootDir}`);
   
-  // Check client build directories
+  // Check client build directories without logging sensitive paths
   const clientPaths = [
     path.resolve(rootDir, 'packages/client/dist'),
     path.resolve(rootDir, 'client/dist'),
@@ -29,22 +28,14 @@ if (NODE_ENV === 'production') {
   
   for (const p of clientPaths) {
     if (fs.existsSync(p)) {
-      logger.info(`Found client build at: ${p}`);
       try {
         const files = fs.readdirSync(p);
-        logger.info(`Client build files: ${files.join(', ')}`);
-        
-        // Check for index.html specifically
-        if (files.includes('index.html')) {
-          logger.info(`✓ index.html found`);
-        } else {
-          logger.warn(`✗ index.html NOT found in ${p}`);
+        if (!files.includes('index.html')) {
+          logger.warn('Client build missing index.html');
         }
       } catch (err) {
-        logger.error(`Error reading client build directory: ${err}`);
+        logger.error('Error reading client build directory');
       }
-    } else {
-      logger.warn(`Client build NOT found at: ${p}`);
     }
   }
 }
@@ -163,43 +154,6 @@ app.use(assetRedirectMiddleware);
 // First define health and debug endpoints
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
-});
-
-// Debug endpoint for Heroku deployment
-app.get('/debug', (req, res) => {
-  const rootDir = process.cwd();
-  const possiblePaths = [
-    path.resolve(rootDir, 'packages/client/dist'),
-    path.resolve(rootDir, '../client/dist'),
-    path.resolve(rootDir, '../../client/dist'),
-    path.resolve(rootDir, 'client/dist'),
-    path.resolve(rootDir, 'dist'),
-    path.resolve(__dirname, '../../client/dist')
-  ];
-  
-  const pathExists = possiblePaths.map(p => ({
-    path: p,
-    exists: fs.existsSync(p),
-    files: fs.existsSync(p) ? fs.readdirSync(p).slice(0, 10) : []
-  }));
-  
-  res.json({
-    environment: NODE_ENV,
-    currentDirectory: rootDir,
-    serverDirectory: __dirname,
-    possibleClientPaths: pathExists,
-    routes: app._router.stack.filter((r: any) => r.route).map((r: any) => ({
-      path: r.route?.path,
-      methods: r.route?.methods
-    })),
-    middlewareCount: app._router.stack.length,
-    envVars: {
-      PORT: process.env.PORT,
-      NODE_ENV: process.env.NODE_ENV,
-      MONGODB_URI: process.env.MONGODB_URI ? '[REDACTED]' : undefined,
-      CORS_ORIGINS: process.env.CORS_ORIGINS
-    }
-  });
 });
 
 // Root route - always available even if other routes fail
