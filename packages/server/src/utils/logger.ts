@@ -1,5 +1,13 @@
 import pino from 'pino';
 import { NODE_ENV } from '../config';
+import { Request, Response } from 'express';
+
+// Extend the Express Response type to include our custom properties
+declare module 'express' {
+  interface Response {
+    responseTime?: number;
+  }
+}
 
 // Configure the logger options
 const loggerOptions = {
@@ -40,7 +48,7 @@ const loggerOptions = {
 const logger = pino(loggerOptions);
 
 // Utility function for HTTP request logging
-export const httpLogger = (req: any, res: any, responseBody?: any) => {
+export const httpLogger = (req: Request, res: Response, responseBody?: unknown) => {
   const logObject = {
     req: {
       method: req.method,
@@ -77,9 +85,14 @@ export const httpLogger = (req: any, res: any, responseBody?: any) => {
   }
 };
 
+// Options for the request logger middleware
+interface RequestLoggerOptions {
+  [key: string]: unknown;
+}
+
 // Create middleware for Express request logging
-export const requestLogger = (options = {}) => {
-  return (req: any, res: any, next: any) => {
+export const requestLogger = (options: RequestLoggerOptions = {}) => {
+  return (req: Request, res: Response, next: (err?: Error) => void) => {
     // Record the start time
     const startTime = Date.now();
     
@@ -87,7 +100,7 @@ export const requestLogger = (options = {}) => {
     const originalEnd = res.end;
     
     // Override the end method
-    res.end = function(chunk?: any, encoding?: any) {
+    res.end = function(chunk?: unknown, encoding?: string) {
       // Calculate the response time
       res.responseTime = Date.now() - startTime;
       
