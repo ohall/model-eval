@@ -1,7 +1,7 @@
 import express from 'express';
 import { googleAuth, validateToken } from '../controllers';
 import { authMiddleware } from '../middlewares/auth.middleware';
-import { NODE_ENV } from '../config';
+import { ALLOW_DEV_TOKENS } from '../config';
 import { createDevelopmentUser } from '../utils';
 
 const router = express.Router();
@@ -12,8 +12,8 @@ router.post('/google', googleAuth);
 // Token validation route - requires authentication
 router.get('/validate', authMiddleware, validateToken);
 
-// Development token endpoint - only available in development mode
-if (NODE_ENV === 'development') {
+// Development token endpoint - only available when ALLOW_DEV_TOKENS is true
+if (ALLOW_DEV_TOKENS) {
   router.get('/dev-token', (req, res) => {
     const user = createDevelopmentUser();
     res.status(200).json({
