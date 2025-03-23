@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { NODE_ENV, JWT_SECRET } from '../config';
 import { UserModel } from '../models';
-import { isDevelopmentToken } from '../utils';
+import { isDevelopmentToken, createDevelopmentUser } from '../utils';
 import logger from '../utils/logger';
 
 // Extend Express Request type to include user
@@ -34,10 +34,17 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const token = authHeader.split(' ')[1];
 
-    // Reject development tokens in production
+    // Allow development tokens only in development mode
     if (isDevelopmentToken(token)) {
-      logger.warn('Development token rejected');
-      return res.status(401).json({ message: 'Development tokens not allowed' });
+      if (NODE_ENV === 'development') {
+        logger.debug('Development token accepted in development mode');
+        req.user = createDevelopmentUser();
+        return next();
+      }
+      
+      // Reject development tokens in production
+      logger.warn('Development token rejected in production');
+      return res.status(401).json({ message: 'Development tokens not allowed in production' });
     }
 
     // Verify JWT token
