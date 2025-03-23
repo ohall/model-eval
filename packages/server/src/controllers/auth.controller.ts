@@ -64,11 +64,11 @@ export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
     // Return user and token
     res.status(200).json({
       user: {
-        id: user._id,
+        id: user._id.toString(),
         email: user.email,
-        name: user.name,
-        picture: user.picture,
-        providerId: user.providerId,
+        name: user.name || '',
+        picture: user.picture || '',
+        providerId: user.providerId || '',
         provider: user.provider,
       },
       token,
