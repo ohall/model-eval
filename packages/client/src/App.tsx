@@ -31,11 +31,6 @@ const queryClient = new QueryClient({
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
-// Log client ID for debugging (remove in production)
-console.log("Google Client ID:", GOOGLE_CLIENT_ID);
-console.log("Current origin:", window.location.origin);
-console.log("Environment:", import.meta.env.MODE);
-
 const App: React.FC = () => {
   return (
     <ChakraProvider theme={theme}>
