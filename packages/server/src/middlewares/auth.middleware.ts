@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { OAuth2Client } from 'google-auth-library';
-import { GOOGLE_CLIENT_ID } from '../config';
+import jwt from 'jsonwebtoken';
+import { NODE_ENV, JWT_SECRET } from '../config';
 import { UserModel } from '../models';
-
-// Create a Google OAuth client
-const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+import { isDevelopmentToken, createDevelopmentUser } from '../utils';
 
 // Extend Express Request type to include user
 declare global {
@@ -15,11 +13,16 @@ declare global {
         email: string;
         name?: string;
         picture?: string;
+        provider?: string;
       };
     }
   }
 }
 
+/**
+ * JWT Authentication middleware that verifies the JWT token 
+ * and attaches the user to the request object.
+ */
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Get token from Authorization header
@@ -30,27 +33,21 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const token = authHeader.split(' ')[1];
 
-    // Verify the token
-    const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID,
-    });
-
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      return res.status(401).json({ message: 'Invalid token' });
+    // Check for development token
+    if (NODE_ENV === 'development' && isDevelopmentToken(token)) {
+      // Attach development user to request and proceed
+      req.user = createDevelopmentUser();
+      return next();
     }
 
-    // Find or create user
-    let user = await UserModel.findOne({ email: payload.email });
+    // Verify JWT token
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    
+    // Find the user by ID
+    const user = await UserModel.findById(decoded.id);
+    
     if (!user) {
-      user = await UserModel.create({
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-        providerId: payload.sub,
-        provider: 'google',
-      });
+      return res.status(401).json({ message: 'User not found' });
     }
 
     // Attach user to request
@@ -59,6 +56,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       email: user.email,
       name: user.name,
       picture: user.picture,
+      provider: user.provider
     };
 
     next();
