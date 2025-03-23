@@ -15,8 +15,8 @@
     "lint": "pnpm -r lint",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
     "start": "node packages/server/dist/index.js",
-    "heroku-prebuild": "npm install -g pnpm",
-    "heroku-postbuild": "pnpm install --no-frozen-lockfile && pnpm -r build"
+    "heroku-prebuild": "chmod +x bin/fix-pnpm.sh && ./bin/fix-pnpm.sh",
+    "heroku-postbuild": "pnpm install --no-frozen-lockfile && pnpm run build"
   },
   "workspaces": [
     "packages/*"
