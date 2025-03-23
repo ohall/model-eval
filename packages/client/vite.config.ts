@@ -28,7 +28,18 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    // Use relative paths for assets in production
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        // Ensure assets use relative paths rather than absolute paths
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+      },
+    },
   },
+  base: './', // Use relative paths instead of absolute
   test: {
     globals: true,
     environment: 'jsdom',

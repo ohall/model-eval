@@ -193,7 +193,32 @@ if (NODE_ENV === 'production') {
   if (clientFilesFound) {
     // Set up static file serving
     logger.info(`Serving static files from: ${staticPath}`);
-    app.use(express.static(staticPath));
+    
+    // Set up proper MIME types for common file types
+    express.static.mime.define({
+      'application/javascript': ['js'],
+      'text/css': ['css'],
+      'image/svg+xml': ['svg'],
+    });
+
+    // Configure static file serving options
+    const staticOptions = {
+      maxAge: '1d', // Cache for 1 day
+      etag: true,
+      lastModified: true,
+      fallthrough: true, // Continue to next middleware if file not found
+      index: false // Disable auto-serving of index.html for directory requests
+    };
+    
+    // Serve static files with the configured options
+    app.use(express.static(staticPath, staticOptions));
+    
+    // Special handling for assets folder
+    app.use('/assets', express.static(path.join(staticPath, 'assets'), staticOptions));
+    
+    // Handle favicon.ico and other root files
+    app.use('/favicon.ico', express.static(path.join(staticPath, 'favicon.ico')));
+    app.use('/favicon.svg', express.static(path.join(staticPath, 'favicon.svg')));
     
     // Serve index.html for any non-API routes to support client-side routing
     app.get('*', (req, res, next) => {
@@ -201,6 +226,9 @@ if (NODE_ENV === 'production') {
       if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug' || req.path === '/') {
         return next();
       }
+      
+      // Log request path for debugging
+      logger.info(`Serving index.html for path: ${req.path}`);
       
       const indexPath = path.join(staticPath, 'index.html');
       if (fs.existsSync(indexPath)) {
