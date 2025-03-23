@@ -118,7 +118,7 @@ app.get('/debug', (req, res) => {
     currentDirectory: rootDir,
     serverDirectory: __dirname,
     possibleClientPaths: pathExists,
-    routes: app._router.stack.filter(r => r.route).map(r => ({
+    routes: app._router.stack.filter((r: any) => r.route).map((r: any) => ({
       path: r.route?.path,
       methods: r.route?.methods
     })),
