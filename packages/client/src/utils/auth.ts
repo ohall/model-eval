@@ -6,12 +6,7 @@
  * Check if the application is running in development mode
  */
 export const isDevelopmentMode = (): boolean => {
-  // Check for development environment
-  if (process.env.NODE_ENV === 'development') {
-    return true;
-  }
-
-  // Check if running on localhost
+  // Only allow development mode on localhost
   if (typeof window !== 'undefined' && 
       (window.location.hostname === 'localhost' || 
        window.location.hostname === '127.0.0.1')) {
