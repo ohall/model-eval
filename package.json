@@ -4,8 +4,8 @@
   "private": true,
   "description": "LLM evaluation tool for comparing performance across providers",
   "engines": {
-    "node": ">=18",
-    "pnpm": ">=8"
+    "node": "18.x",
+    "pnpm": "8.x"
   },
   "packageManager": "pnpm@8.15.1",
   "scripts": {

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+set -e
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+
+# Install pnpm
+npm install -g pnpm@8.15.1
+
+# Use pnpm instead of npm
+cd $BUILD_DIR
+pnpm install
+pnpm build
+
+echo "Compile completed!"

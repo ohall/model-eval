@@ -24,7 +24,8 @@ For detailed manual setup instructions, see [HEROKU_DEPLOYMENT.md](HEROKU_DEPLOY
 |----------|-------------|
 | `MONGODB_URI` | MongoDB connection string |
 | `JWT_SECRET` | Secret for JWT token generation |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID (for server) |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID (for client) |
 
 ### Optional Environment Variables
 
@@ -52,9 +53,30 @@ See the [HEROKU_DEPLOYMENT.md](HEROKU_DEPLOYMENT.md#troubleshooting) section for
 To run this application locally with the same configuration as Heroku:
 
 1. Clone the repository
-2. Create a `.env` file with the same variables as your Heroku config
-3. Run `pnpm install`
-4. Run `pnpm dev`
+2. Create a `.env` file in the `packages/client` directory with:
+   ```
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id
+   ```
+3. Create a `.env` file in the `packages/server` directory with:
+   ```
+   MONGODB_URI=your_mongodb_uri
+   JWT_SECRET=your_jwt_secret
+   GOOGLE_CLIENT_ID=your_google_client_id
+   ```
+4. Run `pnpm install`
+5. Run `pnpm dev`
+
+## Setting Heroku Environment Variables
+
+To set all environment variables on Heroku from your local .env files:
+
+1. Install the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
+2. Run the script:
+   ```bash
+   ./scripts/set-heroku-vars.sh <your-heroku-app-name>
+   ```
+
+This will read both `packages/client/.env` and `packages/server/.env` and set all variables on your Heroku app.
 
 ## Resources
 
