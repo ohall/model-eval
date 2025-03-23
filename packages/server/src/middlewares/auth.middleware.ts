@@ -57,7 +57,14 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
     
     // Attach user to request object
-    req.user = user;
+    req.user = {
+      id: user._id.toString(),
+      email: user.email || '',
+      name: user.name || '',
+      picture: user.picture || '',
+      providerId: user.providerId || '',
+      provider: user.provider as 'google'
+    };
     
     next();
   } catch (error) {
