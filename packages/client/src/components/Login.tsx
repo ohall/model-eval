@@ -59,6 +59,7 @@ const Login: React.FC = () => {
         
         // For development: Fall back to client-side authentication
         const userData = {
+          id: decodedUser.sub, // Use sub as the ID
           email: decodedUser.email,
           name: decodedUser.name,
           picture: decodedUser.picture,
@@ -180,6 +181,7 @@ const Login: React.FC = () => {
                   // For testing only - simulate a successful login 
                   // This should be replaced with a proper demo/test account login
                   const testUser = {
+                    id: "test-user-id",
                     email: "test@example.com",
                     name: "Test User",
                     provider: "google" as const

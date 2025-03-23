@@ -19,8 +19,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
     "start": "node packages/server/dist/index.js",
     "heroku-prebuild": "chmod +x bin/fix-pnpm.sh && ./bin/fix-pnpm.sh && chmod +x bin/heroku-cleanup.js && node bin/heroku-cleanup.js",
-    "heroku-postbuild": "chmod +x bin/fix-heroku-dependencies.js && node bin/fix-heroku-dependencies.js && pnpm install --force --no-frozen-lockfile && pnpm run build && chmod +x bin/fix-heroku-paths.js bin/fix-heroku-client-build.js bin/fix-client-paths.js bin/ensure-assets.js && node bin/fix-heroku-paths.js && node bin/fix-client-paths.js && node bin/ensure-assets.js && node bin/fix-heroku-client-build.js",
-    "postinstall": "test -d packages/client/dist || (echo 'Building client...' && cd packages/client && pnpm build)"
+    "heroku-postbuild": "chmod +x bin/fix-heroku-dependencies.js && node bin/fix-heroku-dependencies.js && pnpm install --force --no-frozen-lockfile && cd packages/shared && pnpm build && cd ../client && pnpm build:heroku && cd ../server && pnpm build && cd ../.. && chmod +x bin/fix-heroku-paths.js bin/fix-heroku-client-build.js bin/fix-client-paths.js bin/ensure-assets.js && node bin/fix-heroku-paths.js && node bin/fix-client-paths.js && node bin/ensure-assets.js && node bin/fix-heroku-client-build.js",
+    "postinstall": "test -d packages/client/dist || (echo 'Building client...' && cd packages/client && pnpm build:heroku || pnpm build)"
   },
   "workspaces": [
     "packages/*"
