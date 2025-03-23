@@ -91,12 +91,15 @@ app.use(helmet({
       frameSrc: ["'self'", "https://accounts.google.com", "https://*.googleapis.com"],
       connectSrc: ["'self'", "https://*.googleapis.com", "https://*.googleusercontent.com"],
       imgSrc: ["'self'", "https://*.googleusercontent.com", "data:", "https://*.googleapis.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://accounts.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
   },
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" }
 }));
 // Add Heroku domain to CORS if not already included
 let corsOrigins = CORS_ORIGINS;
