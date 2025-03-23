@@ -11,6 +11,7 @@ export const CORS_ORIGINS = process.env.CORS_ORIGINS?.split(',') || ['http://loc
 
 // Auth configuration
 export const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+export const ALLOW_DEV_TOKENS = process.env.ALLOW_DEV_TOKENS === 'true';
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 
 // Provider API keys
