@@ -72,7 +72,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Debug endpoint for Heroku deployment
+// Debug endpoint for Heroku deployment - place BEFORE middleware and route registration
 app.get('/debug', (req, res) => {
   const rootDir = process.cwd();
   const possiblePaths = [
@@ -80,6 +80,7 @@ app.get('/debug', (req, res) => {
     path.resolve(rootDir, '../client/dist'),
     path.resolve(rootDir, '../../client/dist'),
     path.resolve(rootDir, 'client/dist'),
+    path.resolve(rootDir, 'dist'),
     path.resolve(__dirname, '../../client/dist')
   ];
   
@@ -94,6 +95,11 @@ app.get('/debug', (req, res) => {
     currentDirectory: rootDir,
     serverDirectory: __dirname,
     possibleClientPaths: pathExists,
+    routes: app._router.stack.filter(r => r.route).map(r => ({
+      path: r.route?.path,
+      methods: r.route?.methods
+    })),
+    middlewareCount: app._router.stack.length,
     envVars: {
       PORT: process.env.PORT,
       NODE_ENV: process.env.NODE_ENV,
