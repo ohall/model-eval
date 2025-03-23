@@ -22,9 +22,10 @@ echo "Configuring pnpm..."
 pnpm config set node-linker hoisted
 pnpm config set shamefully-hoist true
 
-# Set pnpm store directory
+# Set pnpm store directory and ensure it's used globally
 echo "Setting pnpm store directory..."
-pnpm config set store-dir ./.pnpm-store
+pnpm config set store-dir "/tmp/pnpmcache.EZMf1/v3" --global
+pnpm config set store-dir "/tmp/pnpmcache.EZMf1/v3"
 
 # Display pnpm version
 echo "pnpm version: $(pnpm --version)"
