@@ -164,6 +164,38 @@ function verifyAndLinkAssets() {
     );
   }
   
+  // Create environment.js file for runtime configuration
+  const herokuUrl = 'https://model-eval-aa67ebbb791b.herokuapp.com';
+  const environmentJs = `
+// Runtime environment configuration
+window.ENV = {
+  API_URL: "${herokuUrl}/api",
+  ENV: "${process.env.NODE_ENV || 'development'}",
+  APP_VERSION: "${new Date().toISOString()}"
+};
+console.log('Environment loaded:', window.ENV);
+`;
+
+  // Add environment.js to all directories
+  for (const dir of existingDirs) {
+    // Write environment.js file
+    fs.writeFileSync(path.join(dir, 'environment.js'), environmentJs);
+    console.log(`Created environment.js in ${dir}`);
+    
+    // Add script tag to index.html if not already present
+    const indexPath = path.join(dir, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      let html = fs.readFileSync(indexPath, 'utf8');
+      
+      if (!html.includes('environment.js')) {
+        // Add before closing head tag
+        html = html.replace('</head>', '<script src="/environment.js"></script>\n  </head>');
+        fs.writeFileSync(indexPath, html);
+        console.log(`Updated ${indexPath} with environment.js script tag`);
+      }
+    }
+  }
+  
   console.log('Asset verification and repair completed.');
 }
 
