@@ -87,10 +87,10 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://accounts.google.com", "https://*.googleusercontent.com"],
-      frameSrc: ["'self'", "https://accounts.google.com"],
-      connectSrc: ["'self'", "https://*.googleapis.com"],
-      imgSrc: ["'self'", "https://*.googleusercontent.com", "data:"],
+      scriptSrc: ["'self'", "https://accounts.google.com", "https://*.googleusercontent.com", "https://*.googleapis.com"],
+      frameSrc: ["'self'", "https://accounts.google.com", "https://*.googleapis.com"],
+      connectSrc: ["'self'", "https://*.googleapis.com", "https://*.googleusercontent.com"],
+      imgSrc: ["'self'", "https://*.googleusercontent.com", "data:", "https://*.googleapis.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],

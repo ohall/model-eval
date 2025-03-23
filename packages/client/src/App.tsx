@@ -33,12 +33,21 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
 // Log client ID for debugging (remove in production)
 console.log("Google Client ID:", GOOGLE_CLIENT_ID);
+console.log("Current origin:", window.location.origin);
+console.log("Environment:", import.meta.env.MODE);
 
 const App: React.FC = () => {
   return (
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID} onScriptLoadError={() => console.error("Google script failed to load")}>
+        <GoogleOAuthProvider 
+          clientId={GOOGLE_CLIENT_ID} 
+          onScriptLoadError={() => {
+            console.error("Google script failed to load");
+            console.log("Current URL:", window.location.href);
+            console.log("Origin:", window.location.origin);
+          }}
+        >
           <AuthProvider>
             <AppProvider>
               <Router>

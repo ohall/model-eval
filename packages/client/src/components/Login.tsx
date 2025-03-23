@@ -161,6 +161,10 @@ const Login: React.FC = () => {
             shape="rectangular"
             logo_alignment="center"
             text="signin_with"
+            useOneTap={false}
+            context="signin"
+            auto_select={false}
+            cancel_on_tap_outside={true}
           />
           
           {error && (
