@@ -1,3 +1,5 @@
+import { logger } from './logger';
+
 /**
  * Utility functions for authentication
  */
@@ -55,7 +57,7 @@ export const setupHerokuDevAuth = (): boolean => {
     
   // Only allow dev auth if explicitly enabled via query param
   if (isRunningOnHeroku() && enableDevAuth && !localStorage.getItem('token')) {
-    console.log('Setting up development authentication for Heroku (only because explicitly enabled)');
+    logger.debug('Setting up development authentication for Heroku');
     localStorage.setItem('token', 'dev-jwt-token');
     localStorage.setItem('user', JSON.stringify(createDevelopmentUser()));
     
