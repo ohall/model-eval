@@ -254,11 +254,34 @@ if (NODE_ENV === 'production') {
       etag: true,
       lastModified: true,
       fallthrough: true, // Continue to next middleware if file not found
-      index: false // Disable auto-serving of index.html for directory requests
+      index: false, // Disable auto-serving of index.html for directory requests
+      setHeaders: (res: any, path: string) => {
+        if (path.endsWith('.svg')) {
+          res.setHeader('Content-Type', 'image/svg+xml');
+        }
+      }
     };
     
     // Serve static files with the configured options
     app.use(express.static(staticPath, staticOptions));
+    
+    // Special handling for favicon
+    app.get('/favicon.svg', (req, res, next) => {
+      const possiblePaths = [
+        path.join(staticPath, 'favicon.svg'),
+        path.join(process.cwd(), 'packages/client/public/favicon.svg'),
+        path.join(process.cwd(), 'packages/client/dist/favicon.svg')
+      ];
+      
+      for (const filePath of possiblePaths) {
+        if (fs.existsSync(filePath)) {
+          res.setHeader('Content-Type', 'image/svg+xml');
+          return res.sendFile(filePath);
+        }
+      }
+      
+      next();
+    });
     
     // Special handling for assets folder - try multiple locations
     app.get('/assets/*', (req, res, next) => {
@@ -286,10 +309,6 @@ if (NODE_ENV === 'production') {
       logger.error(`Asset not found: ${assetPath}. Tried paths: ${possiblePaths.join(', ')}`);
       next();
     });
-    
-    // Handle favicon.ico and other root files
-    app.use('/favicon.ico', express.static(path.join(staticPath, 'favicon.ico')));
-    app.use('/favicon.svg', express.static(path.join(staticPath, 'favicon.svg')));
     
     // Serve index.html for any non-API routes to support client-side routing
     app.get('*', (req, res, next) => {
