@@ -1,1 +1,1 @@
-web: cd /app && NODE_ENV=production cd packages/server && pnpm start
+web: cd /app && NODE_ENV=production ls -la packages/client && node packages/server/dist/index.js
