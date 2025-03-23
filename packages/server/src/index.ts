@@ -143,7 +143,12 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
+// Use morgan for HTTP logging (will replace with Pino request logger)
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
+
+// Add Pino request logger middleware
+import { requestLogger } from './utils/logger';
+app.use(requestLogger());
 
 // Initialize asset mapping for all known files
 initializeAssetMap();

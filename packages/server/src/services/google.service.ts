@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { EvaluationMetrics, EvaluationOptions } from '@model-eval/shared';
 import { GOOGLE_API_KEY } from '../config';
+import logger from '../utils/logger';
 
 export class GoogleService {
   private client: GoogleGenerativeAI;
@@ -17,7 +18,7 @@ export class GoogleService {
       let modelName = options.model || 'gemini-1.5-pro';
       
       // Try to get available models
-      console.log(`Using Google model: ${modelName}`);
+      logger.info({ model: modelName }, 'Using Google model');
       
       const model = this.client.getGenerativeModel({
         model: modelName,
@@ -64,7 +65,7 @@ export class GoogleService {
         metrics,
       };
     } catch (error) {
-      console.error('Error using Google Generative AI:', error);
+      logger.error({ error }, 'Error using Google Generative AI');
       throw new Error(`Google API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }

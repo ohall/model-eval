@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { NODE_ENV, JWT_SECRET } from '../config';
 import { UserModel } from '../models';
-import { isDevelopmentToken, createDevelopmentUser } from '../utils';
+import { isDevelopmentToken } from '../utils';
 import logger from '../utils/logger';
 
 // Extend Express Request type to include user
@@ -34,32 +34,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const token = authHeader.split(' ')[1];
 
-    // Only allow development tokens on localhost (development mode)
-    // or on herokuapp.com when a special header is provided
+    // Reject development tokens in production
     if (isDevelopmentToken(token)) {
-      // Check if running in development mode
-      if (NODE_ENV === 'development') {
-        logger.debug('Development token accepted in development mode');
-        req.user = createDevelopmentUser();
-        return next();
-      }
-      
-      // Check for special debug header (for Heroku testing only)
-      const isDebug = req.headers['x-allow-dev-token'] === 'true';
-      
-      // Check if the request comes from herokuapp.com domain
-      const referer = req.headers.referer || '';
-      const isHerokuRequest = referer.includes('herokuapp.com');
-      
-      if (isDebug && isHerokuRequest) {
-        logger.debug('Development token accepted in production with debug header');
-        req.user = createDevelopmentUser();
-        return next();
-      }
-      
-      // Otherwise reject the token
-      logger.warn('Development token rejected in production');
-      return res.status(401).json({ message: 'Development tokens not allowed in production' });
+      logger.warn('Development token rejected');
+      return res.status(401).json({ message: 'Development tokens not allowed' });
     }
 
     // Verify JWT token

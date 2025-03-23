@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { UserModel } from '../models';
 import { JWT_SECRET, GOOGLE_CLIENT_ID } from '../config';
+import logger from '../utils/logger';
 
 // Create a Google OAuth client
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
@@ -74,7 +75,7 @@ export const googleAuth = asyncHandler(async (req: Request, res: Response) => {
       token,
     });
   } catch (error) {
-    console.error('Google auth error:', error);
+    logger.error({ error }, 'Google auth error');
     res.status(401);
     throw new Error('Invalid Google token');
   }
