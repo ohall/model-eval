@@ -14,28 +14,29 @@ export class AnthropicService {
 
   async generateResponse(prompt: string, options: Partial<EvaluationOptions>): Promise<{ response: string; metrics: EvaluationMetrics }> {
     const startTime = Date.now();
-    logger.info({ model: options.model || 'claude-3-sonnet-20240229' }, 'Using Anthropic model');
+    const model = options.model || 'claude-3-sonnet-20240229';
+    logger.info({ model }, 'Using Anthropic model');
 
     try {
-      const response = await this.client.completions.create({
-      model: options.model || 'claude-3-sonnet-20240229',
-      max_tokens_to_sample: options.maxTokens || 1024,
-      prompt: `\n\nHuman: ${prompt}\n\nAssistant:`,
-      temperature: options.temperature,
-    });
+      const response = await this.client.messages.create({
+        model: model,
+        max_tokens: options.maxTokens || 1024,
+        messages: [
+          { role: 'user', content: prompt }
+        ],
+        temperature: options.temperature,
+      });
 
-    const endTime = Date.now();
-    const latencyMs = endTime - startTime;
+      const endTime = Date.now();
+      const latencyMs = endTime - startTime;
 
-    // Estimate tokens since the API doesn't provide them directly
-    const promptChars = prompt.length;
-    const responseText = response.completion;
-    const completionChars = responseText.length;
-    
-    // Very rough approximation: ~4 characters per token
-    const promptTokens = Math.ceil(promptChars / 4);
-    const completionTokens = Math.ceil(completionChars / 4);
-    const totalTokens = promptTokens + completionTokens;
+      // Get usage metrics from the response
+      const promptTokens = response.usage?.input_tokens || 0;
+      const completionTokens = response.usage?.output_tokens || 0;
+      const totalTokens = promptTokens + completionTokens;
+      
+      // Get the response text
+      const responseText = response.content[0]?.text || '';
 
     // Calculate approximate cost based on Anthropic's pricing
     // This is a simplified calculation and may not be accurate for all models
@@ -57,12 +58,12 @@ export class AnthropicService {
     };
 
     return {
-      response: response.completion || '',
+      response: responseText,
       metrics,
     };
     } catch (error) {
       logger.error({ error }, 'Error using Anthropic model');
-      throw new Error(`Anthropic API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(`Anthropic API Error: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     }
   }
 }
