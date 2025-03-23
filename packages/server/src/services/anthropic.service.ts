@@ -38,29 +38,29 @@ export class AnthropicService {
       // Get the response text
       const responseText = response.content[0]?.text || '';
 
-    // Calculate approximate cost based on Anthropic's pricing
-    // This is a simplified calculation and may not be accurate for all models
-    let costUsd = 0;
-    if (options.model?.includes('claude-3-opus')) {
-      costUsd = (promptTokens * 0.00003) + (completionTokens * 0.00015);
-    } else if (options.model?.includes('claude-3-sonnet')) {
-      costUsd = (promptTokens * 0.000003) + (completionTokens * 0.000015);
-    } else if (options.model?.includes('claude-3-haiku')) {
-      costUsd = (promptTokens * 0.00000025) + (completionTokens * 0.00000125);
-    }
+      // Calculate approximate cost based on Anthropic's pricing
+      // This is a simplified calculation and may not be accurate for all models
+      let costUsd = 0;
+      if (options.model?.includes('claude-3-opus')) {
+        costUsd = (promptTokens * 0.00003) + (completionTokens * 0.00015);
+      } else if (options.model?.includes('claude-3-sonnet')) {
+        costUsd = (promptTokens * 0.000003) + (completionTokens * 0.000015);
+      } else if (options.model?.includes('claude-3-haiku')) {
+        costUsd = (promptTokens * 0.00000025) + (completionTokens * 0.00000125);
+      }
 
-    const metrics: EvaluationMetrics = {
-      latencyMs,
-      promptTokens,
-      completionTokens,
-      totalTokens,
-      costUsd,
-    };
+      const metrics: EvaluationMetrics = {
+        latencyMs,
+        promptTokens,
+        completionTokens,
+        totalTokens,
+        costUsd,
+      };
 
-    return {
-      response: responseText,
-      metrics,
-    };
+      return {
+        response: responseText,
+        metrics,
+      };
     } catch (error) {
       logger.error({ error }, 'Error using Anthropic model');
       throw new Error(`Anthropic API Error: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
