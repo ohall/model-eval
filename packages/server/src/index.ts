@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
+import fs from 'fs';
 
 import { PORT, CORS_ORIGINS, NODE_ENV } from './config';
 import { connectDB, logger, notFound, errorHandler } from './utils';
@@ -36,17 +37,73 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Debug endpoint for Heroku deployment
+app.get('/debug', (req, res) => {
+  const rootDir = process.cwd();
+  const possiblePaths = [
+    path.resolve(rootDir, 'packages/client/dist'),
+    path.resolve(rootDir, '../client/dist'),
+    path.resolve(rootDir, '../../client/dist'),
+    path.resolve(rootDir, 'client/dist'),
+    path.resolve(__dirname, '../../client/dist')
+  ];
+  
+  const pathExists = possiblePaths.map(p => ({
+    path: p,
+    exists: fs.existsSync(p),
+    files: fs.existsSync(p) ? fs.readdirSync(p).slice(0, 10) : []
+  }));
+  
+  res.json({
+    environment: NODE_ENV,
+    currentDirectory: rootDir,
+    serverDirectory: __dirname,
+    possibleClientPaths: pathExists,
+    envVars: {
+      PORT: process.env.PORT,
+      NODE_ENV: process.env.NODE_ENV,
+      MONGODB_URI: process.env.MONGODB_URI ? '[REDACTED]' : undefined,
+      CORS_ORIGINS: process.env.CORS_ORIGINS
+    }
+  });
+});
+
 // Serve static files from the client build in production
 if (NODE_ENV === 'production') {
-  // Define the static folder path - adjust if needed based on your build setup
-  const staticPath = path.resolve(__dirname, '../../client/dist');
+  // Define the static folder path - first check if client dist exists at expected path
+  let staticPath = path.resolve(__dirname, '../../client/dist');
+  
+  // Fallback paths for Heroku deployment
+  if (!fs.existsSync(staticPath)) {
+    // Try alternative paths that might exist in Heroku
+    const alternatives = [
+      path.resolve(process.cwd(), 'packages/client/dist'),
+      path.resolve(process.cwd(), '../client/dist'),
+      path.resolve(process.cwd(), '../../client/dist'),
+      path.resolve(process.cwd(), 'client/dist')
+    ];
+    
+    for (const alt of alternatives) {
+      if (fs.existsSync(alt)) {
+        staticPath = alt;
+        logger.info(`Using static path: ${staticPath}`);
+        break;
+      }
+    }
+  }
   
   // Set up static file serving
   app.use(express.static(staticPath));
   
   // Serve index.html for any non-API routes to support client-side routing
   app.get('*', (req, res) => {
-    res.sendFile(path.join(staticPath, 'index.html'));
+    const indexPath = path.join(staticPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      logger.error(`index.html not found at ${indexPath}`);
+      res.status(404).send('Client build not found. Make sure to build the client before deploying.');
+    }
   });
 }
 
