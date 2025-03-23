@@ -1,6 +1,7 @@
 import { Anthropic } from '@anthropic-ai/sdk';
 import { EvaluationMetrics, EvaluationOptions } from '@model-eval/shared';
 import { ANTHROPIC_API_KEY } from '../config';
+import logger from '../utils/logger';
 
 export class AnthropicService {
   private client: Anthropic;
@@ -13,8 +14,10 @@ export class AnthropicService {
 
   async generateResponse(prompt: string, options: Partial<EvaluationOptions>): Promise<{ response: string; metrics: EvaluationMetrics }> {
     const startTime = Date.now();
+    logger.info({ model: options.model || 'claude-3-sonnet-20240229' }, 'Using Anthropic model');
 
-    const response = await this.client.completions.create({
+    try {
+      const response = await this.client.completions.create({
       model: options.model || 'claude-3-sonnet-20240229',
       max_tokens_to_sample: options.maxTokens || 1024,
       prompt: `\n\nHuman: ${prompt}\n\nAssistant:`,
@@ -57,5 +60,9 @@ export class AnthropicService {
       response: response.completion || '',
       metrics,
     };
+    } catch (error) {
+      logger.error({ error }, 'Error using Anthropic model');
+      throw new Error(`Anthropic API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 }

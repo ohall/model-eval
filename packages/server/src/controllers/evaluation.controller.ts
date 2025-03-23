@@ -4,6 +4,7 @@ import { PromptModel, EvaluationModel } from '../models';
 import { generateResponseFromProvider } from '../services';
 import { Provider, EvaluationOptions, EvaluationSummary } from '@model-eval/shared';
 import mongoose from 'mongoose';
+import logger from '../utils/logger';
 
 // Create a new evaluation
 export const createEvaluation = asyncHandler(async (req: Request, res: Response) => {
@@ -36,9 +37,11 @@ export const createEvaluation = asyncHandler(async (req: Request, res: Response)
   };
 
   // Generate the response
+  logger.info({ options }, 'Generating response from provider');
   const { response, metrics } = await generateResponseFromProvider(prompt.content, options);
 
   // Save the evaluation
+  logger.info({ metrics }, 'Saving evaluation results');
   const evaluation = await EvaluationModel.create({
     promptId,
     provider,
@@ -183,6 +186,7 @@ export const runMultiProviderEvaluation = asyncHandler(async (req: Request, res:
 
     res.status(201).json(evaluations);
   } catch (error) {
+    logger.error({ error }, 'Error running multi-provider evaluation');
     await session.abortTransaction();
     throw error;
   } finally {

@@ -74,7 +74,46 @@ const createFallbackPage = () => {
 </html>`;
 };
 
-// Middleware with customized CSP for Google authentication
+// Add rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply rate limiting to all routes
+app.use(limiter);
+
+// Add request size limits
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
+// Add Heroku domain to CORS if not already included
+let corsOrigins = CORS_ORIGINS;
+if (NODE_ENV === 'production') {
+  const herokuUrl = 'https://model-eval-aa67ebbb791b.herokuapp.com';
+  if (!corsOrigins.includes(herokuUrl)) {
+    corsOrigins = [...corsOrigins, herokuUrl];
+    logger.info(`Added Heroku URL to CORS origins: ${herokuUrl}`);
+    logger.info(`All CORS origins: ${corsOrigins.join(', ')}`);
+  }
+}
+
+// Configure CORS with explicit options
+app.use(cors({
+  origin: corsOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400, // 24 hours
+  preflightContinue: false,
+  optionsSuccessStatus: 204
+}));
+
+// Add security headers
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -107,40 +146,6 @@ app.use(helmet({
   referrerPolicy: { policy: 'no-referrer-when-downgrade' },
   xssFilter: true,
   hidePoweredBy: true
-}));
-
-// Add rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-// Apply rate limiting to all routes
-app.use(limiter);
-
-// Add request size limits
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
-
-// Add Heroku domain to CORS if not already included
-let corsOrigins = CORS_ORIGINS;
-if (NODE_ENV === 'production') {
-  const herokuUrl = 'https://model-eval-aa67ebbb791b.herokuapp.com';
-  if (!corsOrigins.includes(herokuUrl)) {
-    corsOrigins = [...corsOrigins, herokuUrl];
-    logger.info(`Added Heroku URL to CORS origins: ${herokuUrl}`);
-    logger.info(`All CORS origins: ${corsOrigins.join(', ')}`);
-  }
-}
-
-app.use(cors({
-  origin: corsOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 // Use morgan for HTTP logging (will replace with Pino request logger)

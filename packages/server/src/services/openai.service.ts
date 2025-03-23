@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import { EvaluationMetrics, EvaluationOptions } from '@model-eval/shared';
 import { OPENAI_API_KEY } from '../config';
+import logger from '../utils/logger';
 
 export class OpenAIService {
   private client: OpenAI;
@@ -13,8 +14,10 @@ export class OpenAIService {
 
   async generateResponse(prompt: string, options: Partial<EvaluationOptions>): Promise<{ response: string; metrics: EvaluationMetrics }> {
     const startTime = Date.now();
+    logger.info({ model: options.model || 'gpt-3.5-turbo' }, 'Using OpenAI model');
 
-    const response = await this.client.chat.completions.create({
+    try {
+      const response = await this.client.chat.completions.create({
       model: options.model || 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
       temperature: options.temperature || 0.7,
@@ -52,5 +55,9 @@ export class OpenAIService {
       response: response.choices[0]?.message.content || '',
       metrics,
     };
+    } catch (error) {
+      logger.error({ error }, 'Error using OpenAI model');
+      throw new Error(`OpenAI API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 }
