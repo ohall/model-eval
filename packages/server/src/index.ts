@@ -7,6 +7,7 @@ import fs from 'fs';
 
 import { PORT, CORS_ORIGINS, NODE_ENV } from './config';
 import { connectDB, logger, notFound, errorHandler } from './utils';
+import { assetRedirectMiddleware, initializeAssetMap } from './utils/asset-handler';
 import routes from './routes';
 
 // Connect to MongoDB
@@ -89,6 +90,12 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
+
+// Initialize asset mapping for all known files
+initializeAssetMap();
+
+// Add asset redirect middleware to handle JS and CSS files
+app.use(assetRedirectMiddleware);
 
 // First define health and debug endpoints
 app.get('/health', (req, res) => {
