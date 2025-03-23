@@ -95,9 +95,9 @@ for (const dir of targetDirs) {
 }
 
 // Make sure the assets directory is available in all locations
-const assetsDir = path.join(clientDistPath, 'assets');
-if (fs.existsSync(assetsDir)) {
-  const assetFiles = fs.readdirSync(assetsDir);
+const clientAssetsDir = path.join(clientDistPath, 'assets');
+if (fs.existsSync(clientAssetsDir)) {
+  const assetFiles = fs.readdirSync(clientAssetsDir);
   console.log(`Found ${assetFiles.length} asset files to copy`);
   
   for (const dir of targetDirs) {
@@ -111,7 +111,7 @@ if (fs.existsSync(assetsDir)) {
       
       // Copy all asset files
       for (const file of assetFiles) {
-        const sourcePath = path.join(assetsDir, file);
+        const sourcePath = path.join(clientAssetsDir, file);
         const targetPath = path.join(targetAssetsDir, file);
         
         fs.copyFileSync(sourcePath, targetPath);
