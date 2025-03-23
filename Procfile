@@ -1,1 +1,1 @@
-web: cd /app && NODE_ENV=production ls -la packages/client && node packages/server/dist/index.js
+web: cd /app && NODE_ENV=production node bin/fix-heroku-client-build.js && ls -la packages/client/dist || echo "Client dist not found" && node packages/server/dist/index.js
