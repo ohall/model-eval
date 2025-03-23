@@ -4,6 +4,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { isDevelopmentMode, createDevelopmentUser } from '../utils';
 
 interface GoogleCredentialResponse {
   credential: string;
@@ -97,7 +98,7 @@ const Login: React.FC = () => {
         <Text>Sign in to continue</Text>
         
         <Box>
-          {process.env.NODE_ENV === 'development' && (
+          {isDevelopmentMode() && (
             <Box mb={4} p={3} borderWidth="1px" borderRadius="md" borderStyle="dashed" borderColor="gray.300">
               <Text fontSize="sm" color="gray.500" mb={2}>Development Mode</Text>
               <Button
@@ -105,12 +106,7 @@ const Login: React.FC = () => {
                 colorScheme="teal"
                 width="full"
                 onClick={() => {
-                  const devUser = {
-                    id: 'dev-user-id',
-                    email: 'dev@example.com',
-                    name: 'Development User',
-                    provider: 'google' as const
-                  };
+                  const devUser = createDevelopmentUser();
                   login('dev-jwt-token', devUser);
                   toast({
                     title: 'Development login',

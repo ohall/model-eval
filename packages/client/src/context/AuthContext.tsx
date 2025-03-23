@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from 'shared/index';
 import axios from 'axios';
+import { isDevelopmentMode, isDevelopmentToken, createDevelopmentUser } from '../utils';
 
 interface AuthContextType {
   user: User | null;
@@ -38,13 +39,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } catch (error) {
         console.error('Auth check error:', error);
         // In development, allow proceeding with a default user
-        if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
-          setUser({
-            id: 'dev-user-id',
-            email: 'dev@example.com',
-            name: 'Development User',
-            provider: 'google',
-          });
+        if (isDevelopmentMode()) {
+          setUser(createDevelopmentUser());
         }
       } finally {
         setIsLoading(false);
@@ -89,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     
     // Check if this is a development token
-    if (token.startsWith('dev-token-') || token === 'dev-jwt-token' || token === 'fake-jwt-token-for-demo') {
+    if (isDevelopmentToken(token)) {
       // For development only - pretend to be a valid user
       // This is a way to bypass authentication for development/testing
       const savedUserData = localStorage.getItem('user_data');
@@ -131,14 +127,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Token validation failed', error);
       
       // For development/demo mode - instead of logging out, check if we should use a dev user
-      if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
+      if (isDevelopmentMode()) {
         console.log('Using development user because token validation failed');
-        setUser({
-          id: 'dev-user-id',
-          email: 'dev@example.com',
-          name: 'Development User',
-          provider: 'google',
-        });
+        setUser(createDevelopmentUser());
         return true;
       }
       
