@@ -3,6 +3,53 @@
 const fs = require('fs');
 const path = require('path');
 
+// Function to fix API base URLs in JavaScript files
+function fixApiUrls() {
+  const clientDistPath = path.join(process.cwd(), 'packages/client/dist');
+  const assetsDir = path.join(clientDistPath, 'assets');
+  
+  if (!fs.existsSync(assetsDir)) {
+    console.log('Assets directory not found, skipping API URL fix');
+    return;
+  }
+  
+  const files = fs.readdirSync(assetsDir);
+  const jsFiles = files.filter(f => f.endsWith('.js'));
+  
+  // The Heroku app URL
+  const herokuUrl = 'https://model-eval-aa67ebbb791b.herokuapp.com';
+  
+  for (const jsFile of jsFiles) {
+    const filePath = path.join(assetsDir, jsFile);
+    let content = fs.readFileSync(filePath, 'utf8');
+    let modified = false;
+    
+    // Replace baseURL pattern for axios
+    if (content.includes('baseURL:"/api"') || content.includes('baseURL: "/api"') ||
+        content.includes('baseURL:\'/api\'') || content.includes('baseURL: \'/api\'')) {
+      console.log(`Fixing baseURL in ${jsFile}...`);
+      
+      content = content.replace(/baseURL:\s*["']\/api["']/g, `baseURL:"${herokuUrl}/api"`);
+      modified = true;
+    }
+    
+    // Replace VITE_API_URL pattern
+    if (content.includes('VITE_API_URL') || content.includes('import.meta.env.VITE_API_URL')) {
+      console.log(`Fixing VITE_API_URL references in ${jsFile}...`);
+      
+      content = content.replace(/import\.meta\.env\.VITE_API_URL\s*\|\|\s*["']\/api["']/g, `"${herokuUrl}/api"`);
+      content = content.replace(/VITE_API_URL\s*\|\|\s*["']\/api["']/g, `"${herokuUrl}/api"`);
+      
+      modified = true;
+    }
+    
+    if (modified) {
+      fs.writeFileSync(filePath, content);
+      console.log(`Updated ${jsFile} with API URL fixes`);
+    }
+  }
+}
+
 // Path to the client dist directory
 const clientDistPath = path.join(process.cwd(), 'packages/client/dist');
 const indexHtmlPath = path.join(clientDistPath, 'index.html');
@@ -121,3 +168,7 @@ if (fs.existsSync(clientAssetsDir)) {
     }
   }
 }
+
+// Fix API URLs in JavaScript files
+console.log('Fixing API URLs in JavaScript files...');
+fixApiUrls();
