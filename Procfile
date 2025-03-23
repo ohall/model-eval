@@ -1,1 +1,1 @@
-web: npm start
+web: cd packages/server && pnpm start
