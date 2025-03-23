@@ -82,8 +82,22 @@ const createFallbackPage = () => {
 </html>`;
 };
 
-// Middleware
-app.use(helmet());
+// Middleware with customized CSP for Google authentication
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://accounts.google.com", "https://*.googleusercontent.com"],
+      frameSrc: ["'self'", "https://accounts.google.com"],
+      connectSrc: ["'self'", "https://*.googleapis.com"],
+      imgSrc: ["'self'", "https://*.googleusercontent.com", "data:"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+}));
 app.use(cors({
   origin: CORS_ORIGINS,
   credentials: true,
