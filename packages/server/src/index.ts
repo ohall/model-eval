@@ -98,9 +98,22 @@ app.use(helmet({
     },
   },
 }));
+// Add Heroku domain to CORS if not already included
+let corsOrigins = CORS_ORIGINS;
+if (NODE_ENV === 'production') {
+  const herokuUrl = 'https://model-eval-aa67ebbb791b.herokuapp.com';
+  if (!corsOrigins.includes(herokuUrl)) {
+    corsOrigins = [...corsOrigins, herokuUrl];
+    logger.info(`Added Heroku URL to CORS origins: ${herokuUrl}`);
+    logger.info(`All CORS origins: ${corsOrigins.join(', ')}`);
+  }
+}
+
 app.use(cors({
-  origin: CORS_ORIGINS,
+  origin: corsOrigins,
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(express.json());
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
