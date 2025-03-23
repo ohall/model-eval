@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { setupHerokuDevAuth, isRunningOnHeroku } from '../utils/auth';
 
 interface User {
   id: string;
@@ -25,6 +26,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Auto-setup dev auth on Heroku if needed
+    if (isRunningOnHeroku()) {
+      console.log('Running on Heroku environment, checking auth setup...');
+      setupHerokuDevAuth();
+    }
+    
     // Check for stored auth data on mount
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
@@ -34,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const parsedUser = JSON.parse(storedUser);
         console.log('Restored auth session:', { 
           tokenLength: storedToken.length,
+          tokenPreview: storedToken.substring(0, 10) + '...',
           user: parsedUser 
         });
         setUser(parsedUser);
@@ -49,6 +57,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } else {
       console.log('No stored auth session found');
+      
+      // If on Heroku and no session found, try setting up dev auth
+      if (isRunningOnHeroku()) {
+        const didSetup = setupHerokuDevAuth();
+        if (didSetup) {
+          // Reload the page to apply the new auth
+          window.location.reload();
+        }
+      }
     }
     setIsLoading(false);
   }, []);
