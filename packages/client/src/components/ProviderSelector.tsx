@@ -6,7 +6,6 @@ import {
   Select,
   Button,
   VStack,
-  HStack,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
@@ -16,8 +15,6 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
-  Text,
-  Badge,
   useToast,
 } from '@chakra-ui/react';
 import { Provider } from 'shared/index';

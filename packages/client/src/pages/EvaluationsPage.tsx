@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Heading, Spinner, Text, Select, SimpleGrid, Button, VStack } from '@chakra-ui/react';
+import { Box, Container, Heading, Spinner, Text, Select, Button, VStack } from '@chakra-ui/react';
 import { EvaluationResult, Prompt } from 'shared/index';
 import { EvaluationService, PromptService } from '../api';
 import EvaluationResultCard from '../components/EvaluationResult';

@@ -10,7 +10,7 @@ import {
   VStack,
   useToast 
 } from '@chakra-ui/react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { EvaluationResult, Prompt } from 'shared/index';
 import { PromptService, EvaluationService } from '../api';
 import ProviderSelector from '../components/ProviderSelector';
@@ -28,7 +28,7 @@ const EvaluatePromptPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<EvaluationResult[]>([]);
   
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const toast = useToast();
 
   useEffect(() => {

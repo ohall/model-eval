@@ -143,9 +143,9 @@ const Login: React.FC = () => {
           )}
           
           <GoogleLogin
-            onSuccess={handleGoogleLogin}
-            onError={(errorResponse) => {
-              console.error('Google login error:', errorResponse);
+            onSuccess={handleGoogleLogin as any}
+            onError={() => {
+              console.error('Google login error');
               setError('Google authentication failed. Please try again using a different browser or clear your cookies.');
               toast({
                 title: 'Login failed',

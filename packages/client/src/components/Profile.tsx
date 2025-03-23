@@ -8,8 +8,7 @@ import {
   MenuItem, 
   MenuDivider, 
   Text,
-  Box,
-  Flex
+  Box
 } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
 
