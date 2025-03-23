@@ -60,7 +60,7 @@ apiClient.interceptors.response.use(
     
     // Handle unauthorized errors (token expired or invalid)
     if (error.response?.status === 401) {
-      logger.warn('Received 401 Unauthorized response');
+      console.warn('Received 401 Unauthorized response');
     }
     
     // Enhanced error object

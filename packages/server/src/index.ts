@@ -9,6 +9,7 @@ import { PORT, CORS_ORIGINS, NODE_ENV } from './config';
 import { connectDB, logger, notFound, errorHandler } from './utils';
 import { assetRedirectMiddleware, initializeAssetMap } from './utils/asset-handler';
 import routes from './routes';
+import { devAuthMiddleware } from './middlewares/dev-auth.middleware';
 
 // Connect to MongoDB
 connectDB();
@@ -150,6 +151,9 @@ app.use(helmet({
 // Add Pino request logger middleware for HTTP request logging
 import { requestLogger } from './utils/logger';
 app.use(requestLogger());
+
+// Add development authentication middleware (only active in development)
+app.use(devAuthMiddleware);
 
 // Initialize asset mapping for all known files
 initializeAssetMap();
