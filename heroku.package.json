@@ -1,0 +1,19 @@
+{
+  "name": "model-eval",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "18.x",
+    "npm": "9.x"
+  },
+  "scripts": {
+    "build": "cd packages/client && npm run build && cd ../server && npm run build",
+    "start": "cd packages/server && npm start",
+    "heroku-postbuild": "npm run build"
+  },
+  "cacheDirectories": [
+    "node_modules",
+    "packages/client/node_modules",
+    "packages/server/node_modules"
+  ]
+}

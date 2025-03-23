@@ -66,7 +66,24 @@ Heroku needs to know how to handle pnpm:
 heroku buildpacks:add -i 1 https://github.com/heroku/heroku-buildpack-nodejs -a model-eval-app
 ```
 
-### 5. Deploy to Heroku
+### 5. Prepare for Deployment
+
+Before deploying, run the preparation script:
+
+```bash
+# Make the script executable
+chmod +x prepare-heroku.sh
+
+# Run the preparation script
+./prepare-heroku.sh
+```
+
+This script will:
+- Remove any conflicting lockfiles
+- Configure .npmrc for Heroku
+- Set up the necessary Heroku build files
+
+### 6. Deploy to Heroku
 
 Push your code to Heroku:
 
@@ -83,7 +100,7 @@ heroku git:remote -a model-eval-app
 git push heroku main  # or git push heroku master
 ```
 
-### 6. Monitor the Deployment
+### 7. Monitor the Deployment
 
 ```bash
 # Watch logs during deployment

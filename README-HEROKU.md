@@ -2,6 +2,23 @@
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/yourusername/model-eval)
 
+## Important: Prepare Repository First
+
+Before deploying to Heroku, run the preparation script:
+
+```bash
+# Make the script executable
+chmod +x prepare-heroku.sh
+
+# Run the preparation script
+./prepare-heroku.sh
+```
+
+This script will:
+- Remove any conflicting lockfiles
+- Configure .npmrc for Heroku
+- Set up the necessary Heroku build files
+
 ## Quick Start
 
 1. Click the "Deploy to Heroku" button above
