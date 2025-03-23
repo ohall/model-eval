@@ -7,6 +7,10 @@ set -e
 echo "Installing pnpm..."
 npm install -g pnpm@8.15.1
 
+# Set exact Node.js version in .npmrc
+echo "Setting exact Node.js version in .npmrc..."
+echo "use-node-version=18.20.7" >> .npmrc
+
 # Install dependencies
 echo "Installing dependencies..."
 pnpm install

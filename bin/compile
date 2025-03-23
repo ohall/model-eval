@@ -10,6 +10,9 @@ ENV_DIR=$3
 # Install pnpm
 npm install -g pnpm@8.15.1
 
+# Set exact Node.js version in .npmrc
+echo "use-node-version=18.20.7" >> "$BUILD_DIR/.npmrc"
+
 # Use pnpm instead of npm
 cd $BUILD_DIR
 pnpm install
