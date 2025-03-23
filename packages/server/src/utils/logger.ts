@@ -96,20 +96,25 @@ export const requestLogger = (options: RequestLoggerOptions = {}) => {
     // Record the start time
     const startTime = Date.now();
     
-    // Keep the original end method
-    const originalEnd = res.end;
+    // No need for both originalEnd and endFn variables
     
     // Override the end method
-    res.end = function(chunk?: unknown, encoding?: string) {
+    const endFn = res.end;
+    res.end = function(
+      this: Response, 
+      chunk: any, 
+      encodingOrCb?: BufferEncoding | (() => void), 
+      cb?: () => void
+    ): Response {
       // Calculate the response time
       res.responseTime = Date.now() - startTime;
       
-      // Call the original end method
-      originalEnd.call(res, chunk, encoding);
-      
-      // Log the request/response
+      // Log the request/response before ending
       httpLogger(req, res);
-    };
+      
+      // Call the original end method with the right arguments
+      return endFn.apply(this, arguments as any);
+    } as any;
     
     next();
   };
