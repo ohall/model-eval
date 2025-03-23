@@ -49,6 +49,38 @@ if (NODE_ENV === 'production') {
 
 const app = express();
 
+// Create a simple static HTML page in case client files are missing
+const createFallbackPage = () => {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <title>Model Evaluation Platform</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+    h1 { color: #333; }
+    .error { background: #ffebee; border: 1px solid #ffcdd2; padding: 15px; border-radius: 4px; }
+    .api { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 4px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Model Evaluation Platform</h1>
+  <div class="error">
+    <h2>Client files not found</h2>
+    <p>The application is running, but the client build files could not be found. Please check the build process.</p>
+  </div>
+  <div class="api">
+    <h2>API Endpoints</h2>
+    <p>The API is still available at the following endpoints:</p>
+    <ul>
+      <li><a href="/api/providers">/api/providers</a> - Get available model providers</li>
+      <li><a href="/health">/health</a> - Check API health</li>
+      <li><a href="/debug">/debug</a> - View debug information</li>
+    </ul>
+  </div>
+</body>
+</html>`;
+};
+
 // Middleware
 app.use(helmet());
 app.use(cors({
@@ -58,12 +90,12 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan(NODE_ENV === 'development' ? 'dev' : 'combined'));
 
-// First define basic health and debug endpoints
+// First define health and debug endpoints
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Debug endpoint for Heroku deployment - place BEFORE middleware and route registration
+// Debug endpoint for Heroku deployment
 app.get('/debug', (req, res) => {
   const rootDir = process.cwd();
   const possiblePaths = [
@@ -100,6 +132,18 @@ app.get('/debug', (req, res) => {
   });
 });
 
+// Root route - always available even if other routes fail
+app.get('/', (req, res) => {
+  // First check for static files
+  const clientDistPath = path.resolve(process.cwd(), 'packages/client/dist/index.html');
+  if (fs.existsSync(clientDistPath)) {
+    return res.sendFile(clientDistPath);
+  }
+  
+  // Fallback to HTML page
+  res.send(createFallbackPage());
+});
+
 // Apply dev authentication middleware if in development mode
 if (NODE_ENV === 'development') {
   const { devAuthMiddleware } = require('./middlewares/dev-auth.middleware');
@@ -108,70 +152,6 @@ if (NODE_ENV === 'development') {
 
 // API Routes
 app.use('/api', routes);
-
-// Create a simple static HTML page in case client files are missing
-const createFallbackPage = () => {
-  return `<!DOCTYPE html>
-<html>
-<head>
-  <title>Model Evaluation Platform</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-    h1 { color: #333; }
-    .error { background: #ffebee; border: 1px solid #ffcdd2; padding: 15px; border-radius: 4px; }
-    .api { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 4px; margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <h1>Model Evaluation Platform</h1>
-  <div class="error">
-    <h2>Client files not found</h2>
-    <p>The application is running, but the client build files could not be found. Please check the build process.</p>
-  </div>
-  <div class="api">
-    <h2>API Endpoints</h2>
-    <p>The API is still available at the following endpoints:</p>
-    <ul>
-      <li><a href="/api/providers">/api/providers</a> - Get available model providers</li>
-      <li><a href="/health">/health</a> - Check API health</li>
-      <li><a href="/debug">/debug</a> - View debug information</li>
-    </ul>
-  </div>
-</body>
-</html>`;
-};
-
-// Root fallback route - will be overridden by static file serving if client files exist
-app.get('/', (req, res) => {
-  res.send(createFallbackPage());
-});
-<head>
-  <title>Model Evaluation Platform</title>
-  <style>
-    body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-    h1 { color: #333; }
-    .error { background: #ffebee; border: 1px solid #ffcdd2; padding: 15px; border-radius: 4px; }
-    .api { background: #e3f2fd; border: 1px solid #bbdefb; padding: 15px; border-radius: 4px; margin-top: 20px; }
-  </style>
-</head>
-<body>
-  <h1>Model Evaluation Platform</h1>
-  <div class="error">
-    <h2>Client files not found</h2>
-    <p>The application is running, but the client build files could not be found. Please check the build process.</p>
-  </div>
-  <div class="api">
-    <h2>API Endpoints</h2>
-    <p>The API is still available at the following endpoints:</p>
-    <ul>
-      <li><a href="/api/providers">/api/providers</a> - Get available model providers</li>
-      <li><a href="/health">/health</a> - Check API health</li>
-      <li><a href="/debug">/debug</a> - View debug information</li>
-    </ul>
-  </div>
-</body>
-</html>`;
-};
 
 // Serve static files from the client build in production
 if (NODE_ENV === 'production') {
@@ -218,7 +198,7 @@ if (NODE_ENV === 'production') {
     // Serve index.html for any non-API routes to support client-side routing
     app.get('*', (req, res, next) => {
       // Skip API routes and special paths
-      if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug') {
+      if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug' || req.path === '/') {
         return next();
       }
       
@@ -234,13 +214,9 @@ if (NODE_ENV === 'production') {
     // If client files not found, serve a fallback page for all non-API routes
     logger.error('Client build files not found. Serving fallback page.');
     
-    app.get('/', (req, res) => {
-      res.send(createFallbackPage());
-    });
-    
     app.get('*', (req, res, next) => {
       // Skip API routes and special paths
-      if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug') {
+      if (req.path.startsWith('/api') || req.path === '/health' || req.path === '/debug' || req.path === '/') {
         return next();
       }
       
