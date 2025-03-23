@@ -75,12 +75,12 @@ apiClient.interceptors.response.use(
     
     // Handle unauthorized errors (token expired or invalid)
     if (error.response?.status === 401) {
-      logger.warn('Received 401 Unauthorized response');
+      console.warn('Received 401 Unauthorized response');
       
       // If on Heroku, we can try to use a special debug token for development
       const isHeroku = window.location.hostname.includes('herokuapp.com');
       if (isHeroku && process.env.NODE_ENV !== 'production') {
-        logger.debug('Running on Heroku in development mode - using dev token');
+        console.debug('Running on Heroku in development mode - using dev token');
         localStorage.setItem('token', 'dev-jwt-token');
         // Reload to restart auth flow
         window.location.reload();
