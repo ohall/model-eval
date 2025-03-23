@@ -134,11 +134,24 @@ app.get('/debug', (req, res) => {
 
 // Root route - always available even if other routes fail
 app.get('/', (req, res) => {
-  // First check for static files
-  const clientDistPath = path.resolve(process.cwd(), 'packages/client/dist/index.html');
-  if (fs.existsSync(clientDistPath)) {
-    return res.sendFile(clientDistPath);
+  // Try multiple potential paths for index.html in order of preference
+  const possiblePaths = [
+    path.resolve(process.cwd(), 'packages/client/dist/index.html'),
+    path.resolve(process.cwd(), 'client/dist/index.html'),
+    path.resolve(process.cwd(), 'dist/index.html'),
+    path.resolve(__dirname, '../../client/dist/index.html')
+  ];
+  
+  // Try each path until we find one that exists
+  for (const indexPath of possiblePaths) {
+    if (fs.existsSync(indexPath)) {
+      logger.info(`Serving index.html from: ${indexPath}`);
+      return res.sendFile(indexPath);
+    }
   }
+  
+  // If no index.html found, log and serve fallback
+  logger.warn('No index.html found, serving fallback page');
   
   // Fallback to HTML page
   res.send(createFallbackPage());
