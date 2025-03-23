@@ -15,10 +15,15 @@ export default defineConfig({
     host: '0.0.0.0', // Allow connections from Docker
     proxy: {
       '/api': {
-        target: 'http://localhost:8001',
+        target: process.env.API_URL || 'http://localhost:8001',
         changeOrigin: true,
       },
     },
+  },
+  define: {
+    // Provide environment variables to the client
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    'process.env.API_BASE_URL': JSON.stringify(process.env.API_BASE_URL || '/api'),
   },
   build: {
     outDir: 'dist',
