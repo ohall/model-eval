@@ -120,13 +120,13 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "https://accounts.google.com", "https://*.googleusercontent.com", "https://*.googleapis.com"],
       frameSrc: ["'self'", "https://accounts.google.com", "https://*.googleapis.com"],
-      connectSrc: ["'self'", "https://*.googleapis.com", "https://*.googleusercontent.com", "https://accounts.google.com"],
-      imgSrc: ["'self'", "https://*.googleusercontent.com", "data:", "https://*.googleapis.com", "https://accounts.google.com"],
+      connectSrc: ["'self'", "https://*.googleapis.com", "https://*.googleusercontent.com"],
+      imgSrc: ["'self'", "https://*.googleusercontent.com", "data:", "https://*.googleapis.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://accounts.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
-      formAction: ["'self'", "https://accounts.google.com"],
+      formAction: ["'self'"],
       baseUri: ["'self'"],
       frameAncestors: ["'none'"],
     },
@@ -191,34 +191,6 @@ app.get('/', (req, res) => {
 
 // API routes
 app.use('/api', routes);
-
-// Special route for favicons to ensure they're properly served
-app.get(['/favicon.ico', '/favicon.svg'], (req, res) => {
-  const requestedFile = req.path.substring(1); // Remove leading slash
-  logger.debug(`Favicon requested: ${requestedFile}`);
-  
-  // Try to find the favicon in various locations
-  const possiblePaths = [
-    path.resolve(process.cwd(), 'packages/client/dist', requestedFile),
-    path.resolve(process.cwd(), 'packages/client/public', requestedFile),
-    path.resolve(process.cwd(), 'client/dist', requestedFile),
-    path.resolve(process.cwd(), 'client/public', requestedFile),
-    path.resolve(process.cwd(), 'dist', requestedFile),
-    path.resolve(process.cwd(), 'public', requestedFile)
-  ];
-  
-  // Try each path and use the first one that exists
-  for (const faviconPath of possiblePaths) {
-    if (fs.existsSync(faviconPath)) {
-      logger.debug(`Found favicon at: ${faviconPath}`);
-      return res.sendFile(faviconPath);
-    }
-  }
-  
-  // If favicon not found, return 404
-  logger.warn(`Favicon not found: ${requestedFile}`);
-  res.status(404).end();
-});
 
 // Serve static files
 // Check multiple possible locations for static files
