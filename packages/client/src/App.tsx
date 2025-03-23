@@ -18,6 +18,7 @@ import EditPromptPage from './pages/EditPromptPage';
 import EvaluatePromptPage from './pages/EvaluatePromptPage';
 import EvaluationsPage from './pages/EvaluationsPage';
 import LoginPage from './pages/LoginPage';
+import { NotFound } from './pages/NotFound';
 
 // Create a react-query client
 const queryClient = new QueryClient({
@@ -59,6 +60,9 @@ const App: React.FC = () => {
                     <Route path="/prompts/evaluate/:id" element={<EvaluatePromptPage />} />
                     <Route path="/evaluations" element={<EvaluationsPage />} />
                   </Route>
+
+                  {/* 404 Route - must be last */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Router>
             </AppProvider>

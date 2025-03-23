@@ -278,12 +278,14 @@ app.get('*', (req, res, next) => {
   // Try each path and use the first one that exists
   for (const indexPath of possiblePaths) {
     if (fs.existsSync(indexPath)) {
+      // Set 404 status for non-existent routes
+      res.status(404);
       return res.sendFile(indexPath);
     }
   }
   
   // If no index.html is found, send the fallback page
-  res.send(createFallbackPage());
+  res.status(404).send(createFallbackPage());
 });
 
 // Error handling middleware
