@@ -43,6 +43,21 @@ apiClient.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
+      
+      // Add special header for development tokens on Heroku
+      if (token === 'dev-jwt-token' || 
+          token.startsWith('dev-token-') || 
+          token === 'fake-jwt-token-for-demo') {
+        
+        // Check if we're on Heroku
+        const isHeroku = typeof window !== 'undefined' && 
+                        window.location.hostname.includes('herokuapp.com');
+                        
+        // Only add the special header on Heroku
+        if (isHeroku) {
+          config.headers['X-Allow-Dev-Token'] = 'true';
+        }
+      }
     }
     return config;
   },

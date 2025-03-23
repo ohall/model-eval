@@ -45,14 +45,28 @@ export const isRunningOnHeroku = (): boolean => {
 };
 
 /**
- * Use development authentication on Heroku
- * This function helps debug auth issues on Heroku by using a development token
+ * Use development authentication on Heroku, but only in specific
+ * debug scenarios or when explicitly enabled
  */
 export const setupHerokuDevAuth = (): boolean => {
-  if (isRunningOnHeroku() && !localStorage.getItem('token')) {
-    console.log('Setting up development authentication for Heroku');
+  // Check if the special "enable-dev-auth" query parameter is present
+  const enableDevAuth = typeof window !== 'undefined' && 
+    window.location.search.includes('enable-dev-auth=true');
+    
+  // Only allow dev auth if explicitly enabled via query param
+  if (isRunningOnHeroku() && enableDevAuth && !localStorage.getItem('token')) {
+    console.log('Setting up development authentication for Heroku (only because explicitly enabled)');
     localStorage.setItem('token', 'dev-jwt-token');
     localStorage.setItem('user', JSON.stringify(createDevelopmentUser()));
+    
+    // Remove the query parameter to avoid reapplying dev auth on refresh
+    if (typeof window !== 'undefined') {
+      const newUrl = window.location.pathname + 
+        window.location.search.replace(/[?&]enable-dev-auth=true/, '') + 
+        window.location.hash;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+    
     return true;
   }
   return false;

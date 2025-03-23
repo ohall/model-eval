@@ -169,7 +169,7 @@ const Login: React.FC = () => {
             cancel_on_tap_outside={true}
           />
           
-          {error && (
+          {error && isDevelopmentMode() && (
             <Box mt={5} pt={4} borderTopWidth="1px">
               <Text fontSize="sm" mb={3} fontWeight="bold">
                 Having trouble with Google Sign-In?
@@ -202,6 +202,18 @@ const Login: React.FC = () => {
               >
                 Use Demo Account
               </Button>
+            </Box>
+          )}
+          
+          {error && !isDevelopmentMode() && (
+            <Box mt={5} pt={4} borderTopWidth="1px">
+              <Text fontSize="sm" mb={3} fontWeight="bold">
+                Having trouble with Google Sign-In?
+              </Text>
+              <Text fontSize="sm" color="gray.600">
+                Please make sure cookies are enabled and try again.
+                If the problem persists, please contact support.
+              </Text>
             </Box>
           )}
         </Box>

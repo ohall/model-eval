@@ -33,12 +33,32 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const token = authHeader.split(' ')[1];
 
-    // Check for development token (allow in any environment for Heroku testing)
+    // Only allow development tokens on localhost (development mode)
+    // or on herokuapp.com when a special header is provided
     if (isDevelopmentToken(token)) {
-      console.log('Development token detected:', token.substring(0, 10) + '...');
-      // Attach development user to request and proceed
-      req.user = createDevelopmentUser();
-      return next();
+      // Check if running in development mode
+      if (NODE_ENV === 'development') {
+        console.log('Development token accepted in development mode');
+        req.user = createDevelopmentUser();
+        return next();
+      }
+      
+      // Check for special debug header (for Heroku testing only)
+      const isDebug = req.headers['x-allow-dev-token'] === 'true';
+      
+      // Check if the request comes from herokuapp.com domain
+      const referer = req.headers.referer || '';
+      const isHerokuRequest = referer.includes('herokuapp.com');
+      
+      if (isDebug && isHerokuRequest) {
+        console.log('Development token accepted in production with debug header');
+        req.user = createDevelopmentUser();
+        return next();
+      }
+      
+      // Otherwise reject the token
+      console.warn('Development token rejected in production');
+      return res.status(401).json({ message: 'Development tokens not allowed in production' });
     }
 
     // Verify JWT token
