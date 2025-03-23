@@ -179,7 +179,6 @@ window.ENV = {
   for (const dir of existingDirs) {
     // Write environment.js file
     fs.writeFileSync(path.join(dir, 'environment.js'), environmentJs);
-    console.log(`Created environment.js in ${dir}`);
     
     // Add script tag to index.html if not already present
     const indexPath = path.join(dir, 'index.html');
@@ -190,12 +189,9 @@ window.ENV = {
         // Add before closing head tag
         html = html.replace('</head>', '<script src="/environment.js"></script>\n  </head>');
         fs.writeFileSync(indexPath, html);
-        console.log(`Updated ${indexPath} with environment.js script tag`);
       }
     }
   }
-  
-  console.log('Asset verification and repair completed.');
 }
 
 // Run the function
