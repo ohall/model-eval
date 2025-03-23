@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { UserModel } from '../models';
 import { User } from 'shared/index';
-import { JWT_SECRET } from '../config';
+import { JWT_SECRET, NODE_ENV } from '../config';
+import { isDevelopmentToken, createDevelopmentUser } from '../utils';
 
 // Extend Express Request to include user property
 declare global {
@@ -19,14 +20,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     // If user is already set by another middleware (like devAuthMiddleware), use it
     if (!req.user) {
       // Set a default development user
-      req.user = {
-        id: 'dev-user-id',
-        email: 'dev@example.com',
-        name: 'Development User',
-        picture: 'https://via.placeholder.com/150',
-        providerId: 'mock-provider-id',
-        provider: 'google',
-      };
+      req.user = createDevelopmentUser();
     }
     return next();
   }
@@ -47,13 +41,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     }
     
     // Special handling for development tokens
-    if (token === 'dev-jwt-token' || token.startsWith('dev-token-') || token === 'fake-jwt-token-for-demo') {
-      req.user = {
-        id: 'dev-user-id', 
-        email: 'dev@example.com',
-        name: 'Development User',
-        provider: 'google',
-      };
+    if (isDevelopmentToken(token)) {
+      req.user = createDevelopmentUser();
       return next();
     }
     

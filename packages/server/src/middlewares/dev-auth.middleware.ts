@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { NODE_ENV } from '../config';
+import { createDevelopmentUser } from '../utils';
 
 /**
  * Development authentication middleware that bypasses actual authentication
@@ -15,27 +16,13 @@ export const devAuthMiddleware = (req: Request, res: Response, next: NextFunctio
   if (req.path === '/auth/google') {
     // Create a mock response
     return res.status(200).json({
-      user: {
-        id: 'dev-user-id',
-        email: 'dev@example.com',
-        name: 'Development User',
-        picture: 'https://via.placeholder.com/150',
-        providerId: 'mock-provider-id',
-        provider: 'google',
-      },
+      user: createDevelopmentUser(),
       token: 'dev-jwt-token',
     });
   }
 
   // For other protected routes, just add a mock user to the request
-  req.user = {
-    id: 'dev-user-id',
-    email: 'dev@example.com',
-    name: 'Development User',
-    picture: 'https://via.placeholder.com/150',
-    providerId: 'mock-provider-id',
-    provider: 'google',
-  };
+  req.user = createDevelopmentUser();
   
   next();
 };
