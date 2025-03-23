@@ -1,0 +1,57 @@
+{
+  "name": "model-eval",
+  "description": "LLM evaluation tool for comparing performance across providers",
+  "repository": "https://github.com/yourusername/model-eval",
+  "keywords": ["node", "express", "react", "typescript", "llm", "evaluation"],
+  "engines": {
+    "node": "18.x"
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment (production or development)",
+      "value": "production"
+    },
+    "JWT_SECRET": {
+      "description": "Secret key for JWT token generation",
+      "generator": "secret"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB connection URI"
+    },
+    "CORS_ORIGINS": {
+      "description": "Comma-separated list of allowed origins for CORS",
+      "value": "https://your-app-name.herokuapp.com"
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "Google OAuth client ID for authentication"
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key"
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Anthropic API key"
+    },
+    "GOOGLE_API_KEY": {
+      "description": "Google API key for Gemini"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "mongolab:sandbox"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "echo 'Application deployed successfully!'"
+  }
+}

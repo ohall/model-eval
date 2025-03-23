@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
 
 import { PORT, CORS_ORIGINS, NODE_ENV } from './config';
 import { connectDB, logger, notFound, errorHandler } from './utils';
@@ -34,6 +35,20 @@ app.use('/api', routes);
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+// Serve static files from the client build in production
+if (NODE_ENV === 'production') {
+  // Define the static folder path - adjust if needed based on your build setup
+  const staticPath = path.resolve(__dirname, '../../client/dist');
+  
+  // Set up static file serving
+  app.use(express.static(staticPath));
+  
+  // Serve index.html for any non-API routes to support client-side routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(staticPath, 'index.html'));
+  });
+}
 
 // Error handling
 app.use(notFound);

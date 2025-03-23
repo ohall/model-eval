@@ -13,7 +13,9 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
-    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "start": "node packages/server/dist/index.js",
+    "heroku-postbuild": "pnpm -r build"
   },
   "workspaces": [
     "packages/*"
