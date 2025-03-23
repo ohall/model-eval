@@ -113,7 +113,7 @@ app.use(helmet({
   },
   ieNoOpen: true,
   noSniff: true,
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  referrerPolicy: { policy: 'no-referrer-when-downgrade' },
   xssFilter: true,
   hidePoweredBy: true
 }));
@@ -215,4 +215,63 @@ app.get('/', (req, res) => {
   // Try each path until we find one that exists
   for (const indexPath of possiblePaths) {
     if (fs.existsSync(indexPath)) {
-      logger.info(`
+      logger.info(`Found index.html at: ${indexPath}`);
+      return res.sendFile(indexPath);
+    }
+  }
+  
+  // If no index.html is found, send the fallback page
+  logger.warn('No client index.html found, serving fallback page');
+  res.send(createFallbackPage());
+});
+
+// API routes
+app.use('/api', routes);
+
+// Serve static files
+// Check multiple possible locations for static files
+const clientDistPaths = [
+  path.resolve(process.cwd(), 'packages/client/dist'),
+  path.resolve(process.cwd(), 'client/dist'),
+  path.resolve(process.cwd(), 'dist'),
+  path.resolve(__dirname, '../../client/dist')
+];
+
+// Try each path and use the first one that exists
+for (const staticPath of clientDistPaths) {
+  if (fs.existsSync(staticPath)) {
+    logger.info(`Serving static files from: ${staticPath}`);
+    app.use(express.static(staticPath));
+    break;
+  }
+}
+
+// Serve React app for all other routes (SPA)
+app.get('*', (req, res) => {
+  // Try multiple potential paths for index.html
+  const possiblePaths = [
+    path.resolve(process.cwd(), 'packages/client/dist/index.html'),
+    path.resolve(process.cwd(), 'client/dist/index.html'),
+    path.resolve(process.cwd(), 'dist/index.html'),
+    path.resolve(__dirname, '../../client/dist/index.html')
+  ];
+  
+  // Try each path and use the first one that exists
+  for (const indexPath of possiblePaths) {
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+  }
+  
+  // If no index.html is found, send the fallback page
+  res.send(createFallbackPage());
+});
+
+// Error handling middleware
+app.use(notFound);
+app.use(errorHandler);
+
+// Start server
+app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT} in ${NODE_ENV} mode`);
+});

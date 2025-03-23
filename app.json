@@ -4,7 +4,8 @@
   "repository": "https://github.com/yourusername/model-eval",
   "keywords": ["node", "express", "react", "typescript", "llm", "evaluation"],
   "engines": {
-    "node": "18.x"
+    "node": "18.20.7",
+    "npm": "9.8.1"
   },
   "buildpacks": [
     {

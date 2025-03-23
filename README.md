@@ -1,6 +1,8 @@
-# model-eval
+# LLM Evaluation Platform
 
-A full-stack TypeScript application for evaluating and comparing Large Language Model (LLM) responses across different providers.
+![LLM Evaluation Platform](docs/robo.jpg)
+
+A modern web application for evaluating and comparing Large Language Model (LLM) responses across different providers. Built with TypeScript, React, and Node.js.
 
 ## Features
 
