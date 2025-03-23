@@ -9,6 +9,18 @@ const indexHtmlPath = path.join(clientDistPath, 'index.html');
 
 console.log('Fixing paths in client HTML...');
 
+// Scan asset directory to get all available .js and .css files
+const assetsDir = path.join(clientDistPath, 'assets');
+let jsFiles = [];
+let cssFiles = [];
+
+if (fs.existsSync(assetsDir)) {
+  const files = fs.readdirSync(assetsDir);
+  jsFiles = files.filter(f => f.endsWith('.js'));
+  cssFiles = files.filter(f => f.endsWith('.css'));
+  console.log(`Found assets: JS=${jsFiles.join(', ')}, CSS=${cssFiles.join(', ')}`);
+}
+
 // Check if the file exists
 if (!fs.existsSync(indexHtmlPath)) {
   console.error(`index.html not found at ${indexHtmlPath}`);
@@ -18,17 +30,53 @@ if (!fs.existsSync(indexHtmlPath)) {
 // Read the HTML file
 let html = fs.readFileSync(indexHtmlPath, 'utf8');
 
-// Replace absolute paths with relative paths
-console.log('Original HTML paths:', html.match(/src="\/[^"]+"|href="\/[^"]+"/g));
+// Extract asset paths from HTML
+const jsMatches = html.match(/src="[^"]*\.js"/g) || [];
+const cssMatches = html.match(/href="[^"]*\.css"/g) || [];
+
+console.log('Original asset references:', {
+  js: jsMatches,
+  css: cssMatches
+});
 
 // Replace absolute paths with relative paths
 html = html.replace(/src="\/([^"]+)"/g, 'src="$1"');
 html = html.replace(/href="\/([^"]+)"/g, 'href="$1"');
 
-console.log('New HTML paths:', html.match(/src="[^"\/][^"]+"|href="[^"\/][^"]+"/g));
+// Extract the js and css filenames from the HTML
+let mainJsFile = '';
+const jsRegex = /src="[^"]*\/([^\/]*\.js)"/;
+const jsMatch = html.match(jsRegex);
+if (jsMatch) {
+  mainJsFile = jsMatch[1];
+}
+
+let mainCssFile = '';
+const cssRegex = /href="[^"]*\/([^\/]*\.css)"/;
+const cssMatch = html.match(cssRegex);
+if (cssMatch) {
+  mainCssFile = cssMatch[1];
+}
+
+console.log(`Main assets referenced in HTML: JS=${mainJsFile}, CSS=${mainCssFile}`);
+
+// Create asset-manifest.json
+const assetManifest = {
+  js: jsFiles,
+  css: cssFiles,
+  mainJs: mainJsFile,
+  mainCss: mainCssFile,
+  timestamp: new Date().toISOString()
+};
+
+// Write the asset manifest
+const manifestPath = path.join(clientDistPath, 'asset-manifest.json');
+fs.writeFileSync(manifestPath, JSON.stringify(assetManifest, null, 2));
+console.log(`Created asset manifest at ${manifestPath}`);
 
 // Write the modified HTML file
 fs.writeFileSync(indexHtmlPath, html);
+console.log('Updated HTML with relative paths');
 
 console.log(`Updated ${indexHtmlPath} with relative paths`);
 

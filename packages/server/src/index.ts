@@ -226,8 +226,32 @@ if (NODE_ENV === 'production') {
     // Serve static files with the configured options
     app.use(express.static(staticPath, staticOptions));
     
-    // Special handling for assets folder
-    app.use('/assets', express.static(path.join(staticPath, 'assets'), staticOptions));
+    // Special handling for assets folder - try multiple locations
+    app.get('/assets/*', (req, res, next) => {
+      const assetPath = req.path.substring('/assets/'.length);
+      logger.info(`Asset request for: ${assetPath}`);
+      
+      // Try to find the asset in multiple possible locations
+      const possiblePaths = [
+        path.join(staticPath, 'assets', assetPath),
+        path.join(process.cwd(), 'packages/client/dist/assets', assetPath),
+        path.join(process.cwd(), 'client/dist/assets', assetPath),
+        path.join(process.cwd(), 'dist/assets', assetPath),
+        path.join(__dirname, '../../client/dist/assets', assetPath)
+      ];
+      
+      // Try each path until we find one that exists
+      for (const filePath of possiblePaths) {
+        if (fs.existsSync(filePath)) {
+          logger.info(`Serving asset from: ${filePath}`);
+          return res.sendFile(filePath);
+        }
+      }
+      
+      // If we reach here, the asset was not found in any location
+      logger.error(`Asset not found: ${assetPath}. Tried paths: ${possiblePaths.join(', ')}`);
+      next();
+    });
     
     // Handle favicon.ico and other root files
     app.use('/favicon.ico', express.static(path.join(staticPath, 'favicon.ico')));

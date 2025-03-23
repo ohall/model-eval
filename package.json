@@ -19,7 +19,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
     "start": "node packages/server/dist/index.js",
     "heroku-prebuild": "chmod +x bin/fix-pnpm.sh && ./bin/fix-pnpm.sh",
-    "heroku-postbuild": "pnpm install --no-frozen-lockfile && pnpm run build && chmod +x bin/fix-heroku-paths.js bin/fix-heroku-client-build.js bin/fix-client-paths.js && node bin/fix-heroku-paths.js && node bin/fix-client-paths.js && node bin/fix-heroku-client-build.js",
+    "heroku-postbuild": "pnpm install --no-frozen-lockfile && pnpm run build && chmod +x bin/fix-heroku-paths.js bin/fix-heroku-client-build.js bin/fix-client-paths.js bin/ensure-assets.js && node bin/fix-heroku-paths.js && node bin/fix-client-paths.js && node bin/ensure-assets.js && node bin/fix-heroku-client-build.js",
     "postinstall": "test -d packages/client/dist || (echo 'Building client...' && cd packages/client && pnpm build)"
   },
   "workspaces": [
