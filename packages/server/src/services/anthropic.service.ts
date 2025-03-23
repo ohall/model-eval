@@ -36,7 +36,10 @@ export class AnthropicService {
       const totalTokens = promptTokens + completionTokens;
       
       // Get the response text
-      const responseText = response.content[0]?.text || '';
+      const responseText = 
+        response.content[0]?.type === 'text' 
+          ? response.content[0].text 
+          : '';
 
       // Calculate approximate cost based on Anthropic's pricing
       // This is a simplified calculation and may not be accurate for all models
