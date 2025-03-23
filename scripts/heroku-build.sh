@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change to project root directory
+cd "$(dirname "$0")/.."
+
 # Exit on error
 set -e
 
@@ -9,28 +12,28 @@ npm install -g pnpm@8.15.1
 
 # Install dependencies
 echo "Installing dependencies..."
-pnpm install
+pnpm install --no-frozen-lockfile
 
-# Build shared package first (since it's a dependency)
+# Build shared package first
 echo "Building shared package..."
 cd packages/shared
 pnpm build
 cd ../..
 
-# Build client
-echo "Building client..."
+# Build client package
+echo "Building client package..."
 cd packages/client
 pnpm build
 cd ../..
 
-# Build server
-echo "Building server..."
+# Build server package
+echo "Building server package..."
 cd packages/server
 pnpm build
 cd ../..
 
-# Debug: List contents of client dist
-echo "Checking client build..."
+# Debug: List contents of client build directory
+echo "Listing contents of client build directory..."
 ls -la packages/client/dist
 
-echo "Build completed successfully!"
+echo "Build complete!"

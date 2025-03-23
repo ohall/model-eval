@@ -2,6 +2,9 @@
 
 # This script recreates the pnpm-lock.yaml file for better compatibility with Heroku
 
+# Change to project root directory
+cd "$(dirname "$0")/.."
+
 echo "Recreating pnpm-lock.yaml for Heroku compatibility..."
 
 # Backup existing lockfile

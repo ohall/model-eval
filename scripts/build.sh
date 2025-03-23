@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change to project root directory
+cd "$(dirname "$0")/.."
+
 # Build the shared package
 echo "Building shared package..."
 cd packages/shared

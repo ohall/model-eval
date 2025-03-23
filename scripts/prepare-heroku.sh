@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Change to project root directory
+cd "$(dirname "$0")/.."
+
 # This script prepares the repo for Heroku deployment
 
 # Remove package-lock.json and yarn.lock if present
@@ -83,8 +86,8 @@ chmod +x bin/fix-pnpm.sh
 if [ -f "bin/compile" ]; then
   chmod +x bin/compile bin/detect bin/release
 fi
-if [ -f "heroku-build.sh" ]; then
-  chmod +x heroku-build.sh
+if [ -f "scripts/heroku-build.sh" ]; then
+  chmod +x scripts/heroku-build.sh
 fi
 
 echo "=== Heroku Preparation Complete ==="
