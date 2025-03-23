@@ -218,6 +218,11 @@ const sensitiveEndpoints = [
   /^\/api\/v1\/users\/?.*$/,
 ];
 
+// Direct API paths that should return 403 when accessed directly
+const blockedApiPaths = [
+  '/login',  // This should only be handled by SPA routing, not as a direct server route
+];
+
 // Block sensitive endpoints that aren't part of our actual API
 app.use((req, res, next) => {
   // Skip if the path is handled by our actual API routes
@@ -228,6 +233,16 @@ app.use((req, res, next) => {
       !req.path.startsWith('/api/auth/users') && 
       !req.path.startsWith('/api/v1/')) {
     return next();
+  }
+  
+  // Check exact paths that should be blocked
+  if (blockedApiPaths.includes(req.path)) {
+    logger.warn(`Blocked access to protected path: ${req.path}`);
+    return res.status(403).json({ 
+      message: 'Access forbidden',
+      status: 403,
+      success: false
+    });
   }
   
   // Block access to sensitive endpoints

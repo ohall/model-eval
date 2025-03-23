@@ -385,14 +385,35 @@ async function runTests() {
   
   // Test common sensitive endpoints
   const sensitiveEndpoints = [
+    // API endpoints that shouldn't be directly accessible
     '/api/users',
     '/api/admin',
     '/api/config',
-    '/admin',
-    '/login',
-    '/.env',
     '/api/auth/users',
-    '/api/v1/users'
+    '/api/v1/users',
+    
+    // Authentication related
+    '/login',
+    '/admin',
+    
+    // Config and environment files
+    '/.env',
+    '/package.json',
+    '/package-lock.json',
+    '/pnpm-lock.yaml',
+    
+    // Source control
+    '/.git',
+    '/.git/config',
+    '/.git/HEAD',
+    '/.github/workflows',
+    
+    // Files and directories that shouldn't be accessible
+    '/node_modules',
+    '/node_modules/express',
+    '/.vscode',
+    '/src',
+    '/bin/compile'
   ];
   
   for (const endpoint of sensitiveEndpoints) {
@@ -401,12 +422,14 @@ async function runTests() {
       method: 'GET'
     });
     
-    if (endpointResponse.statusCode !== 404 && endpointResponse.statusCode !== 401) {
+    if (endpointResponse.statusCode !== 404 && 
+        endpointResponse.statusCode !== 401 && 
+        endpointResponse.statusCode !== 403) {
       logWarning('Sensitive Endpoint', 
         `Endpoint ${endpoint} returned ${endpointResponse.statusCode} - verify this endpoint is properly secured`);
     } else {
-      logInfo('Sensitive Endpoint', 
-        `Endpoint ${endpoint} returned ${endpointResponse.statusCode} (not found or unauthorized)`);
+      logResult('Sensitive Endpoint', true,
+        `Endpoint ${endpoint} properly restricted with ${endpointResponse.statusCode} response`);
     }
   }
   
