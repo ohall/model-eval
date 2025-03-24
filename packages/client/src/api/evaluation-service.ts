@@ -53,8 +53,20 @@ export const EvaluationService = {
   },
 
   // Run evaluation across multiple models/providers
-  evaluateWithMultipleProviders: async (request: MultiEvaluationRequest): Promise<EvaluationResult[]> => {
+  evaluateWithMultipleProviders: async (request: MultiEvaluationRequest): Promise<{ 
+    successful: EvaluationResult[]; 
+    failed: Array<{ provider: Provider; model: string; error: string }> 
+  }> => {
     const response = await apiClient.post('/evaluations/multi', request);
+    
+    // Handle both the old API format (just array of results) and new format (with successful/failed)
+    if (Array.isArray(response.data)) {
+      return {
+        successful: response.data,
+        failed: []
+      };
+    }
+    
     return response.data;
   },
 

@@ -8,6 +8,7 @@ export interface Prompt {
   title: string;
   content: string;
   tags?: string[];
+  userId?: string; // Reference to the user who created this prompt
   createdAt?: Date;
   updatedAt?: Date;
 }

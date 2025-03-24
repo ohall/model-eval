@@ -64,9 +64,33 @@ export class GoogleService {
         response: responseText,
         metrics,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error({ error }, 'Error using Google Generative AI');
-      throw new Error(`Google API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Check for quota exceeded error
+      if (error?.status === 429 || error?.message?.includes('quota') || 
+          error?.message?.includes('rate limit')) {
+        throw new Error('Google AI quota or rate limit exceeded. Please try again later or use a different provider.');
+      }
+      
+      // Authentication errors
+      if (error?.status === 401 || error?.message?.includes('authentication') ||
+          error?.message?.includes('API key')) {
+        throw new Error('Google AI authentication failed. Please check your API key configuration.');
+      }
+      
+      // Invalid inputs
+      if (error?.status === 400) {
+        throw new Error('Invalid request to Google AI. Please check your prompt and configuration.');
+      }
+      
+      // Server errors
+      if (error?.status >= 500) {
+        throw new Error('Google AI service is currently experiencing issues. Please try again later or use a different provider.');
+      }
+      
+      // Default error handling
+      throw new Error(`Google API Error: ${error?.message || 'Unknown error'}`);
     }
   }
 }

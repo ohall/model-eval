@@ -64,9 +64,31 @@ export class AnthropicService {
         response: responseText,
         metrics,
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error({ error }, 'Error using Anthropic model');
-      throw new Error(`Anthropic API Error: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+
+      // Handle quota/rate limit errors
+      if (error?.status === 429 || (error?.error && error?.error?.type === 'rate_limit_error')) {
+        throw new Error('Anthropic rate limit or quota exceeded. Please try again later or use a different provider.');
+      }
+      
+      // Authentication errors
+      if (error?.status === 401 || (error?.error && error?.error?.type === 'authentication_error')) {
+        throw new Error('Anthropic authentication failed. Please check your API key configuration.');
+      }
+
+      // Invalid API version (using completions instead of messages)
+      if (error?.status === 400 && error?.error?.message?.includes('not supported on this API')) {
+        throw new Error('Anthropic API version mismatch. The model requires the Messages API.');
+      }
+      
+      // Server errors
+      if (error?.status >= 500) {
+        throw new Error('Anthropic service is currently experiencing issues. Please try again later or use a different provider.');
+      }
+      
+      // Default error handling
+      throw new Error(`Anthropic API Error: ${error?.message || (error?.error ? JSON.stringify(error.error) : 'Unknown error')}`);
     }
   }
 }

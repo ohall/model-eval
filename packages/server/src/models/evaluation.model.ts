@@ -50,16 +50,29 @@ const evaluationSchema = new mongoose.Schema(
       required: true,
     },
     metrics: metricSchema,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
+// Create indexes for faster queries
+evaluationSchema.index({ userId: 1 });
+evaluationSchema.index({ promptId: 1, userId: 1 });
+
 evaluationSchema.virtual('prompt', {
   ref: 'Prompt',
   localField: 'promptId',
   foreignField: '_id',
+  match: function(this: any) {
+    // This ensures the prompt's userId matches the evaluation's userId
+    return { userId: this.userId };
+  },
   justOne: true,
 });
 

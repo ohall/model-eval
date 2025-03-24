@@ -24,6 +24,7 @@ export interface EvaluationResult {
   model: string;
   response: string;
   metrics: EvaluationMetrics;
+  userId?: string; // Reference to the user who created this evaluation
   createdAt?: Date;
 }
 

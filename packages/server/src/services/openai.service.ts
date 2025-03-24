@@ -55,9 +55,32 @@ export class OpenAIService {
       response: response.choices[0]?.message.content || '',
       metrics,
     };
-    } catch (error) {
+    } catch (error: any) {
       logger.error({ error }, 'Error using OpenAI model');
-      throw new Error(`OpenAI API Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Check for quota limit error
+      if (error?.error?.code === 'insufficient_quota' || 
+          (error?.status === 429 && error?.error?.type === 'insufficient_quota')) {
+        throw new Error('OpenAI quota exceeded. Please check your billing details or try a different provider.');
+      }
+      
+      // Rate limit errors
+      if (error?.status === 429) {
+        throw new Error('OpenAI rate limit exceeded. Please try again in a few moments or use a different provider.');
+      }
+      
+      // Authentication errors
+      if (error?.status === 401) {
+        throw new Error('OpenAI authentication failed. Please check your API key configuration.');
+      }
+      
+      // Server errors
+      if (error?.status >= 500) {
+        throw new Error('OpenAI service is currently experiencing issues. Please try again later or use a different provider.');
+      }
+      
+      // Default error message
+      throw new Error(`OpenAI API Error: ${error?.message || error?.error?.message || 'Unknown error'}`);
     }
   }
 }

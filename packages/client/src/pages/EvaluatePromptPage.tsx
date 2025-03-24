@@ -27,6 +27,7 @@ const EvaluatePromptPage: React.FC = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<EvaluationResult[]>([]);
+  const [failedResults, setFailedResults] = useState<Array<{ provider: string; model: string; error: string }>>([]);
   
   // const navigate = useNavigate();
   const toast = useToast();
@@ -61,9 +62,10 @@ const EvaluatePromptPage: React.FC = () => {
     
     setIsEvaluating(true);
     setResults([]);
+    setFailedResults([]);
     
     try {
-      const evalResults = await EvaluationService.evaluateWithMultipleProviders({
+      const response = await EvaluationService.evaluateWithMultipleProviders({
         promptId: id,
         providers: selectedProviders.map(p => ({
           provider: p.provider,
@@ -74,13 +76,37 @@ const EvaluatePromptPage: React.FC = () => {
         })),
       });
       
-      setResults(evalResults);
-      toast({
-        title: 'Evaluation complete',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      setResults(response.successful);
+      setFailedResults(response.failed);
+      
+      if (response.failed.length > 0) {
+        // Show toast with partial failure if some models succeeded
+        if (response.successful.length > 0) {
+          toast({
+            title: 'Partial evaluation success',
+            description: `${response.successful.length} models succeeded, ${response.failed.length} failed`,
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          // Show error if all models failed
+          toast({
+            title: 'Evaluation failed',
+            description: 'All models failed to generate responses',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      } else {
+        toast({
+          title: 'Evaluation complete',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } catch (err) {
       toast({
         title: 'Error running evaluation',
@@ -144,16 +170,43 @@ const EvaluatePromptPage: React.FC = () => {
         </Box>
       </Box>
       
-      {results.length > 0 && (
+      {(results.length > 0 || failedResults.length > 0) && (
         <>
           <Divider my={6} />
           
-          <Heading size="md" mb={4}>Evaluation Results</Heading>
-          <VStack spacing={4} align="stretch">
-            {results.map((result, index) => (
-              <EvaluationResultCard key={result.id || `result-${index}`} evaluation={result} />
-            ))}
-          </VStack>
+          {results.length > 0 && (
+            <>
+              <Heading size="md" mb={4}>Evaluation Results</Heading>
+              <VStack spacing={4} align="stretch" mb={6}>
+                {results.map((result, index) => (
+                  <EvaluationResultCard key={result.id || `result-${index}`} evaluation={result} />
+                ))}
+              </VStack>
+            </>
+          )}
+          
+          {failedResults.length > 0 && (
+            <>
+              <Heading size="md" mb={4} color="red.500">Failed Evaluations</Heading>
+              <VStack spacing={4} align="stretch">
+                {failedResults.map((result, index) => (
+                  <Box 
+                    key={`failed-${index}`}
+                    p={4} 
+                    borderWidth="1px" 
+                    borderRadius="lg" 
+                    borderColor="red.300"
+                    backgroundColor="red.50"
+                  >
+                    <Heading size="sm" mb={2}>
+                      {result.provider} - {result.model}
+                    </Heading>
+                    <Text color="red.600">{result.error}</Text>
+                  </Box>
+                ))}
+              </VStack>
+            </>
+          )}
         </>
       )}
     </Container>
