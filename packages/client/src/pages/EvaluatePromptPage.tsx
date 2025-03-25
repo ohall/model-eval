@@ -5,17 +5,18 @@ import {
   Container,
   Divider,
   Heading,
+  SimpleGrid,
   Spinner,
   Text,
   VStack,
+  Badge,
   useToast,
 } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { EvaluationResult, Prompt } from 'shared/index';
 import { PromptService, EvaluationService } from '../api';
-import ProviderSelector from '../components/ProviderSelector';
-import SelectedProviders from '../components/SelectedProviders';
 import EvaluationResultCard from '../components/EvaluationResult';
+import ModelSelectionGrid from '../components/ModelSelectionGrid';
 import { useAppContext } from '../context/AppContext';
 
 const EvaluatePromptPage: React.FC = () => {
@@ -155,14 +156,33 @@ const EvaluatePromptPage: React.FC = () => {
         <Heading size="md" mb={4}>
           Select Models to Evaluate
         </Heading>
-        <Box display={{ md: 'flex' }} gap={6}>
-          <Box flex="1" mb={{ base: 4, md: 0 }}>
-            <ProviderSelector />
-          </Box>
-          <Box flex="1">
-            <SelectedProviders />
-          </Box>
+        
+        {/* Import our new ModelSelectionGrid component */}
+        <Box>
+          <ModelSelectionGrid />
         </Box>
+        
+        {/* Show selected models summary */}
+        {selectedProviders.length > 0 && (
+          <Box mt={4} p={4} borderWidth="1px" borderRadius="lg" bg="gray.50">
+            <Text fontWeight="bold" mb={2}>
+              Selected Models ({selectedProviders.length}):
+            </Text>
+            <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={2}>
+              {selectedProviders.map((provider, index) => (
+                <Badge 
+                  key={index} 
+                  colorScheme="green" 
+                  p={2} 
+                  borderRadius="md"
+                  fontSize="sm"
+                >
+                  {provider.provider.charAt(0).toUpperCase() + provider.provider.slice(1)} - {provider.model}
+                </Badge>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
 
         <Box mt={6} textAlign="center">
           <Button
@@ -173,7 +193,7 @@ const EvaluatePromptPage: React.FC = () => {
             loadingText="Evaluating"
             isDisabled={selectedProviders.length === 0}
           >
-            Run Evaluation
+            Run Evaluation ({selectedProviders.length} models)
           </Button>
         </Box>
       </Box>

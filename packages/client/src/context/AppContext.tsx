@@ -18,6 +18,7 @@ interface AppContextType {
   addProvider: (provider: ProviderSetting) => void;
   removeProvider: (index: number) => void;
   updateProvider: (index: number, updates: Partial<ProviderSetting>) => void;
+  findProviderIndex: (provider: Provider, model: string) => number;
   loadProviders: () => Promise<void>;
 }
 
@@ -29,6 +30,7 @@ const defaultContext: AppContextType = {
   addProvider: () => {},
   removeProvider: () => {},
   updateProvider: () => {},
+  findProviderIndex: () => -1,
   loadProviders: async () => {},
 };
 
@@ -90,6 +92,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     });
   };
 
+  // Helper function to find a provider in the selectedProviders array
+  const findProviderIndex = (provider: Provider, model: string): number => {
+    return selectedProviders.findIndex(
+      p => p.provider === provider && p.model === model
+    );
+  };
+
   const value: AppContextType = {
     selectedProviders,
     availableProviders,
@@ -98,6 +107,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     addProvider,
     removeProvider,
     updateProvider,
+    findProviderIndex,
     loadProviders,
   };
 
