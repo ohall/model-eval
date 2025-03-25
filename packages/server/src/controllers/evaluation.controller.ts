@@ -234,7 +234,10 @@ export const runMultiProviderEvaluation = asyncHandler(async (req: Request, res:
 
   try {
     // We'll track successful and failed evaluations
-    const results = {
+    const results: {
+      successful: Array<any>;
+      failed: Array<{provider: string, model: string, error: string}>;
+    } = {
       successful: [],
       failed: []
     };
