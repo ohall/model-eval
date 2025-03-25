@@ -6,6 +6,13 @@ import ora from 'ora';
 import { ApiService } from './services/api';
 import { AuthService } from './services/auth';
 
+interface Prompt {
+  id: string;
+  name: string;
+  content: string;
+  description?: string;
+}
+
 const program = new Command();
 const api = ApiService.getInstance();
 
@@ -46,9 +53,9 @@ program
   .action(async () => {
     const spinner = ora('Fetching prompts...').start();
     try {
-      const prompts = await api.getPrompts();
+      const prompts = await api.getPrompts() as Prompt[];
       spinner.stop();
-      console.table(prompts.map(p => ({
+      console.table(prompts.map((p: Prompt) => ({
         ID: p.id,
         Name: p.name,
         Description: p.description || '-'
@@ -71,7 +78,7 @@ program
           type: 'input',
           name: 'name',
           message: 'Enter prompt name:',
-          validate: input => input.length > 0
+          validate: (input: string) => input.length > 0
         },
         {
           type: 'input',
@@ -82,7 +89,7 @@ program
           type: 'editor',
           name: 'content',
           message: 'Enter prompt content:',
-          validate: input => input.length > 0
+          validate: (input: string) => input.length > 0
         }
       ]);
 
@@ -103,7 +110,7 @@ program
     try {
       // Get prompts for selection
       const spinner = ora('Fetching prompts...').start();
-      const prompts = await api.getPrompts();
+      const prompts = await api.getPrompts() as Prompt[];
       spinner.stop();
 
       const { promptId, modelId, parameters } = await inquirer.prompt([
@@ -111,20 +118,20 @@ program
           type: 'list',
           name: 'promptId',
           message: 'Select a prompt:',
-          choices: prompts.map(p => ({ name: p.name, value: p.id }))
+          choices: prompts.map((p: Prompt) => ({ name: p.name, value: p.id }))
         },
         {
           type: 'input',
           name: 'modelId',
           message: 'Enter model ID:',
-          validate: input => input.length > 0
+          validate: (input: string) => input.length > 0
         },
         {
           type: 'editor',
           name: 'parameters',
           message: 'Enter evaluation parameters (JSON):',
           default: '{}',
-          validate: input => {
+          validate: (input: string) => {
             try {
               JSON.parse(input);
               return true;
@@ -132,7 +139,7 @@ program
               return 'Please enter valid JSON';
             }
           },
-          filter: input => JSON.parse(input)
+          filter: (input: string) => JSON.parse(input)
         }
       ]);
 
@@ -149,7 +156,7 @@ program
 program
   .command('results <evaluationId>')
   .description('Get evaluation results')
-  .action(async (evaluationId) => {
+  .action(async (evaluationId: string) => {
     const spinner = ora('Fetching results...').start();
     try {
       const results = await api.getEvaluationResults(evaluationId);
@@ -162,4 +169,4 @@ program
     }
   });
 
-program.parse(); 
+program.parse(process.argv); 
