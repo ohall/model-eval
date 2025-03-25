@@ -4,7 +4,7 @@
 export enum Provider {
   OPENAI = 'openai',
   ANTHROPIC = 'anthropic',
-  GOOGLE = 'google'
+  GOOGLE = 'google',
 }
 
 /**

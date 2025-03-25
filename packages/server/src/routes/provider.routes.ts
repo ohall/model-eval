@@ -3,10 +3,8 @@ import { getProviders, getProviderModels } from '../controllers';
 
 const router = express.Router();
 
-router.route('/')
-  .get(getProviders);
+router.route('/').get(getProviders);
 
-router.route('/:provider/models')
-  .get(getProviderModels);
+router.route('/:provider/models').get(getProviderModels);
 
 export default router;

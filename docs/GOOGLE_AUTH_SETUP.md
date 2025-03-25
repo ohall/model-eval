@@ -1,6 +1,6 @@
 # Setting Up Google Authentication
-https://console.cloud.google.com/auth/overview?project=model-eval-454523
 
+https://console.cloud.google.com/auth/overview?project=model-eval-454523
 
 This guide will help you set up Google Authentication for the Model Evaluation Platform.
 
@@ -47,17 +47,19 @@ This guide will help you set up Google Authentication for the Model Evaluation P
 ## Step 5: Configure Your Application
 
 1. Update your `.env` file with the Google Client ID:
+
    ```
    GOOGLE_CLIENT_ID=your-client-id-from-google-cloud
    ```
 
 2. Update the client-side code in `/packages/client/src/App.tsx` with your Google Client ID:
+
    ```typescript
    // Replace this line
-   const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID";
-   
+   const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+
    // With your actual Client ID
-   const GOOGLE_CLIENT_ID = "123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com";
+   const GOOGLE_CLIENT_ID = '123456789-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com';
    ```
 
 ## Testing Google Authentication

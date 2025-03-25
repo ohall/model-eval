@@ -12,14 +12,10 @@ export const NotFound = () => {
         <Text fontSize="xl" color="gray.600">
           The page you're looking for doesn't exist or has been moved.
         </Text>
-        <Button
-          colorScheme="blue"
-          size="lg"
-          onClick={() => navigate('/')}
-        >
+        <Button colorScheme="blue" size="lg" onClick={() => navigate('/')}>
           Return Home
         </Button>
       </VStack>
     </Container>
   );
-}; 
+};

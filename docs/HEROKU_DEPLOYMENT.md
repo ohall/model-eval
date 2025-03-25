@@ -79,6 +79,7 @@ chmod +x prepare-heroku.sh
 ```
 
 This script will:
+
 - Remove any conflicting lockfiles
 - Configure .npmrc for Heroku
 - Set up the necessary Heroku build files

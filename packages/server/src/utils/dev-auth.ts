@@ -6,9 +6,11 @@
  * Check if a token is a development token
  */
 export const isDevelopmentToken = (token: string): boolean => {
-  return token === 'dev-jwt-token' || 
-         token.startsWith('dev-token-') || 
-         token === 'fake-jwt-token-for-demo';
+  return (
+    token === 'dev-jwt-token' ||
+    token.startsWith('dev-token-') ||
+    token === 'fake-jwt-token-for-demo'
+  );
 };
 
 /**

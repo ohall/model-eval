@@ -25,6 +25,7 @@ This error occurs when the domain/origin you're running your application from do
 This occurs when the user closes the Google sign-in popup before completing authentication.
 
 **Solution:** This is a user action, but you can make the login process more reliable by:
+
 - Using the `useOneTap` option for GoogleLogin component
 - Providing clearer instructions for users
 
@@ -33,6 +34,7 @@ This occurs when the user closes the Google sign-in popup before completing auth
 Similar to the first error, but can also occur when using different ports or protocols.
 
 **Solution:**
+
 - Ensure that ALL URLs where your app runs are added to the authorized origins
 - If testing on different ports, add those URLs as well
 - Check for HTTP vs HTTPS mismatch
@@ -45,10 +47,9 @@ If you've set up the client ID correctly but still see issues:
    ```
    VITE_GOOGLE_CLIENT_ID=your-client-id-here.apps.googleusercontent.com
    ```
-   
 2. Check that there are no trailing spaces in the client ID
-   
 3. Verify that the application is correctly loading the environment variable:
+
    - Check the browser console log for "Google Client ID: [your-id]"
    - If it shows as empty or undefined, your app isn't loading the environment variable correctly
 
@@ -65,23 +66,24 @@ You can test if your Google OAuth configuration is correct by:
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Google OAuth Test</title>
-  <script src="https://accounts.google.com/gsi/client" async></script>
-</head>
-<body>
-  <div id="g_id_onload"
-    data-client_id="YOUR_CLIENT_ID_HERE"
-    data-callback="handleCredentialResponse">
-  </div>
-  <div class="g_id_signin" data-type="standard"></div>
-  
-  <script>
-    function handleCredentialResponse(response) {
-      console.log("Encoded JWT ID token: " + response.credential);
-    }
-  </script>
-</body>
+  <head>
+    <title>Google OAuth Test</title>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+  </head>
+  <body>
+    <div
+      id="g_id_onload"
+      data-client_id="YOUR_CLIENT_ID_HERE"
+      data-callback="handleCredentialResponse"
+    ></div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <script>
+      function handleCredentialResponse(response) {
+        console.log('Encoded JWT ID token: ' + response.credential);
+      }
+    </script>
+  </body>
 </html>
 ```
 
@@ -105,7 +107,9 @@ If you see errors related to "FedCM" or "AbortError: signal is aborted without r
 **Solutions:**
 
 1. **Use standard button type instead of One Tap:**
+
    - Modify your GoogleLogin component to use standard button styling instead of OneTap:
+
    ```jsx
    <GoogleLogin
      onSuccess={handleLogin}
@@ -119,13 +123,13 @@ If you see errors related to "FedCM" or "AbortError: signal is aborted without r
    ```
 
 2. **Clear browser cache and cookies:**
+
    - Clear all Google-related cookies and cache from your browser
    - Try using incognito/private browsing mode
 
 3. **Check browser compatibility:**
    - Some browsers may have different support levels for the FedCM API
    - Try using Chrome, which has the best support for Google Sign-In
-   
 4. **Use a different Google account:**
    - Some Google account settings can affect the FedCM experience
    - Try with a different Google account

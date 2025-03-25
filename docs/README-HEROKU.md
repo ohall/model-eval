@@ -15,6 +15,7 @@ chmod +x prepare-heroku.sh
 ```
 
 This script will:
+
 - Remove any conflicting lockfiles
 - Configure .npmrc for Heroku
 - Set up the necessary Heroku build files
@@ -37,21 +38,21 @@ For detailed manual setup instructions, see [HEROKU_DEPLOYMENT.md](HEROKU_DEPLOY
 
 ### Required Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `MONGODB_URI` | MongoDB connection string |
-| `JWT_SECRET` | Secret for JWT token generation |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID (for server) |
+| Variable                | Description                         |
+| ----------------------- | ----------------------------------- |
+| `MONGODB_URI`           | MongoDB connection string           |
+| `JWT_SECRET`            | Secret for JWT token generation     |
+| `GOOGLE_CLIENT_ID`      | Google OAuth client ID (for server) |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID (for client) |
 
 ### Optional Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key |
-| `ANTHROPIC_API_KEY` | Anthropic API key |
-| `GOOGLE_API_KEY` | Google API key for Gemini |
-| `CORS_ORIGINS` | Comma-separated list of allowed origins |
+| Variable            | Description                             |
+| ------------------- | --------------------------------------- |
+| `OPENAI_API_KEY`    | OpenAI API key                          |
+| `ANTHROPIC_API_KEY` | Anthropic API key                       |
+| `GOOGLE_API_KEY`    | Google API key for Gemini               |
+| `CORS_ORIGINS`      | Comma-separated list of allowed origins |
 
 ## Post-Deployment Tasks
 

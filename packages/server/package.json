@@ -8,7 +8,9 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,js,json,md}\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -43,6 +45,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "prettier": "^3.2.5"
   }
 }

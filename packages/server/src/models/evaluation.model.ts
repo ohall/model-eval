@@ -69,7 +69,7 @@ evaluationSchema.virtual('prompt', {
   ref: 'Prompt',
   localField: 'promptId',
   foreignField: '_id',
-  match: function(this: any) {
+  match: function (this: any) {
     // This ensures the prompt's userId matches the evaluation's userId
     return { userId: this.userId };
   },

@@ -19,29 +19,30 @@ const loggerOptions = {
       'password',
       'token',
       'apiKey',
-      'secret'
+      'secret',
     ],
-    censor: '[REDACTED]'
+    censor: '[REDACTED]',
   },
-  transport: NODE_ENV === 'development' 
-    ? {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:standard',
-          ignore: 'pid,hostname',
+  transport:
+    NODE_ENV === 'development'
+      ? {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            translateTime: 'SYS:standard',
+            ignore: 'pid,hostname',
+          },
         }
-      }
-    : undefined,
+      : undefined,
   base: {
-    env: NODE_ENV
+    env: NODE_ENV,
   },
   timestamp: pino.stdTimeFunctions.isoTime,
   formatters: {
     level: (label: string) => {
       return { level: label.toUpperCase() };
-    }
-  }
+    },
+  },
 };
 
 // Create the logger
@@ -65,12 +66,12 @@ export const httpLogger = (req: Request, res: Response, responseBody?: unknown) 
       responseTime: res.responseTime,
       contentLength: res.get ? res.get('content-length') : undefined,
     },
-    responseBodySample: responseBody ? 
-      // Only log a brief preview of the response body to avoid sensitive data and excessive logging
-      (typeof responseBody === 'string' ? 
-        responseBody.substring(0, 100) + (responseBody.length > 100 ? '...' : '') :
-        '[RESPONSE_BODY]') 
-      : undefined
+    responseBodySample: responseBody
+      ? // Only log a brief preview of the response body to avoid sensitive data and excessive logging
+        typeof responseBody === 'string'
+        ? responseBody.substring(0, 100) + (responseBody.length > 100 ? '...' : '')
+        : '[RESPONSE_BODY]'
+      : undefined,
   };
 
   // Log at appropriate level based on status code
@@ -95,27 +96,27 @@ export const requestLogger = (options: RequestLoggerOptions = {}) => {
   return (req: Request, res: Response, next: (err?: Error) => void) => {
     // Record the start time
     const startTime = Date.now();
-    
+
     // No need for both originalEnd and endFn variables
-    
+
     // Override the end method
     const endFn = res.end;
-    res.end = function(
-      this: Response, 
-      chunk: any, 
-      encodingOrCb?: BufferEncoding | (() => void), 
+    res.end = function (
+      this: Response,
+      chunk: any,
+      encodingOrCb?: BufferEncoding | (() => void),
       cb?: () => void
     ): Response {
       // Calculate the response time
       res.responseTime = Date.now() - startTime;
-      
+
       // Log the request/response before ending
       httpLogger(req, res);
-      
+
       // Call the original end method with the right arguments
       return endFn.apply(this, arguments as any);
     } as any;
-    
+
     next();
   };
 };

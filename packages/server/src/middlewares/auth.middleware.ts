@@ -21,7 +21,7 @@ declare global {
 }
 
 /**
- * JWT Authentication middleware that verifies the JWT token 
+ * JWT Authentication middleware that verifies the JWT token
  * and attaches the user to the request object.
  */
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -41,17 +41,17 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         req.user = createDevelopmentUser();
         return next();
       }
-      
+
       logger.warn('Development token rejected (ALLOW_DEV_TOKENS=false)');
       return res.status(401).json({ message: 'Development tokens not allowed' });
     }
 
     // Verify JWT token
     const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
-    
+
     // Find the user by ID
     const user = await UserModel.findById(decoded.id);
-    
+
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
@@ -62,7 +62,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       email: user.email,
       name: user.name,
       picture: user.picture,
-      provider: user.provider
+      provider: user.provider,
     };
 
     next();

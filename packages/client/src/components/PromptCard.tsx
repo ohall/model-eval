@@ -36,20 +36,20 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, onDelete }) => {
   };
 
   return (
-    <Box 
-      p={5} 
-      shadow="md" 
-      borderWidth="1px" 
+    <Box
+      p={5}
+      shadow="md"
+      borderWidth="1px"
       borderRadius="md"
       bg={bgColor}
       borderColor={borderColor}
     >
       <Heading fontSize="xl">{prompt.title}</Heading>
-      
+
       <Text mt={2} noOfLines={3}>
         {prompt.content}
       </Text>
-      
+
       <HStack mt={3} spacing={2}>
         {prompt.tags?.map((tag, index) => (
           <Badge key={`${prompt.id || ''}-tag-${index}-${tag}`} colorScheme="blue">
@@ -57,32 +57,27 @@ const PromptCard: React.FC<PromptCardProps> = ({ prompt, onDelete }) => {
           </Badge>
         ))}
       </HStack>
-      
+
       <HStack mt={4} spacing={3}>
-        <Button 
-          size="sm" 
-          colorScheme="blue" 
+        <Button
+          size="sm"
+          colorScheme="blue"
           onClick={handleEvaluate}
           isDisabled={!prompt.id}
-          title={!prompt.id ? "Cannot evaluate: Prompt ID is missing" : ""}
+          title={!prompt.id ? 'Cannot evaluate: Prompt ID is missing' : ''}
         >
           Evaluate
         </Button>
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           onClick={handleEdit}
           isDisabled={!prompt.id}
-          title={!prompt.id ? "Cannot edit: Prompt ID is missing" : ""}
+          title={!prompt.id ? 'Cannot edit: Prompt ID is missing' : ''}
         >
           Edit
         </Button>
         {onDelete && (
-          <Button 
-            size="sm" 
-            colorScheme="red" 
-            onClick={handleDelete}
-            isDisabled={!prompt.id}
-          >
+          <Button size="sm" colorScheme="red" onClick={handleDelete} isDisabled={!prompt.id}>
             Delete
           </Button>
         )}

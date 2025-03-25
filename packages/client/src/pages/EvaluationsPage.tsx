@@ -31,16 +31,16 @@ const EvaluationsPage: React.FC = () => {
     const fetchEvaluations = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         let fetchedEvaluations;
-        
+
         if (selectedPromptId) {
           fetchedEvaluations = await EvaluationService.getByPromptId(selectedPromptId);
         } else {
           fetchedEvaluations = await EvaluationService.getAll();
         }
-        
+
         setEvaluations(fetchedEvaluations);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load evaluations');
@@ -66,12 +66,10 @@ const EvaluationsPage: React.FC = () => {
       </Box>
 
       <Box mb={6}>
-        <Text fontWeight="bold" mb={2}>Filter by Prompt:</Text>
-        <Select
-          placeholder="All prompts"
-          value={selectedPromptId}
-          onChange={handlePromptChange}
-        >
+        <Text fontWeight="bold" mb={2}>
+          Filter by Prompt:
+        </Text>
+        <Select placeholder="All prompts" value={selectedPromptId} onChange={handlePromptChange}>
           {prompts.map((prompt, index) => (
             <option key={prompt.id || `prompt-${index}`} value={prompt.id || ''}>
               {prompt.title}
@@ -98,7 +96,10 @@ const EvaluationsPage: React.FC = () => {
       ) : (
         <VStack spacing={4} align="stretch">
           {evaluations.map((evaluation, index) => (
-            <EvaluationResultCard key={evaluation.id || `evaluation-${index}`} evaluation={evaluation} />
+            <EvaluationResultCard
+              key={evaluation.id || `evaluation-${index}`}
+              evaluation={evaluation}
+            />
           ))}
         </VStack>
       )}

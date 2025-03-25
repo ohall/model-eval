@@ -7,42 +7,49 @@ const path = require('path');
 function fixApiUrls() {
   const clientDistPath = path.join(process.cwd(), 'packages/client/dist');
   const assetsDir = path.join(clientDistPath, 'assets');
-  
+
   if (!fs.existsSync(assetsDir)) {
     console.log('Assets directory not found, skipping API URL fix');
     return;
   }
-  
+
   const files = fs.readdirSync(assetsDir);
   const jsFiles = files.filter(f => f.endsWith('.js'));
-  
+
   // The Heroku app URL
   const herokuUrl = 'https://model-eval-aa67ebbb791b.herokuapp.com';
-  
+
   for (const jsFile of jsFiles) {
     const filePath = path.join(assetsDir, jsFile);
     let content = fs.readFileSync(filePath, 'utf8');
     let modified = false;
-    
+
     // Replace baseURL pattern for axios
-    if (content.includes('baseURL:"/api"') || content.includes('baseURL: "/api"') ||
-        content.includes('baseURL:\'/api\'') || content.includes('baseURL: \'/api\'')) {
+    if (
+      content.includes('baseURL:"/api"') ||
+      content.includes('baseURL: "/api"') ||
+      content.includes("baseURL:'/api'") ||
+      content.includes("baseURL: '/api'")
+    ) {
       console.log(`Fixing baseURL in ${jsFile}...`);
-      
+
       content = content.replace(/baseURL:\s*["']\/api["']/g, `baseURL:"${herokuUrl}/api"`);
       modified = true;
     }
-    
+
     // Replace VITE_API_URL pattern
     if (content.includes('VITE_API_URL') || content.includes('import.meta.env.VITE_API_URL')) {
       console.log(`Fixing VITE_API_URL references in ${jsFile}...`);
-      
-      content = content.replace(/import\.meta\.env\.VITE_API_URL\s*\|\|\s*["']\/api["']/g, `"${herokuUrl}/api"`);
+
+      content = content.replace(
+        /import\.meta\.env\.VITE_API_URL\s*\|\|\s*["']\/api["']/g,
+        `"${herokuUrl}/api"`
+      );
       content = content.replace(/VITE_API_URL\s*\|\|\s*["']\/api["']/g, `"${herokuUrl}/api"`);
-      
+
       modified = true;
     }
-    
+
     if (modified) {
       fs.writeFileSync(filePath, content);
       console.log(`Updated ${jsFile} with API URL fixes`);
@@ -83,7 +90,7 @@ const cssMatches = html.match(/href="[^"]*\.css"/g) || [];
 
 console.log('Original asset references:', {
   js: jsMatches,
-  css: cssMatches
+  css: cssMatches,
 });
 
 // Replace absolute paths with relative paths
@@ -113,7 +120,7 @@ const assetManifest = {
   css: cssFiles,
   mainJs: mainJsFile,
   mainCss: mainCssFile,
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 };
 
 // Write the asset manifest
@@ -128,10 +135,7 @@ console.log('Updated HTML with relative paths');
 console.log(`Updated ${indexHtmlPath} with relative paths`);
 
 // Copy the index.html to all potential locations
-const targetDirs = [
-  path.join(process.cwd(), 'client/dist'),
-  path.join(process.cwd(), 'dist')
-];
+const targetDirs = [path.join(process.cwd(), 'client/dist'), path.join(process.cwd(), 'dist')];
 
 for (const dir of targetDirs) {
   if (fs.existsSync(dir)) {
@@ -146,24 +150,24 @@ const clientAssetsDir = path.join(clientDistPath, 'assets');
 if (fs.existsSync(clientAssetsDir)) {
   const assetFiles = fs.readdirSync(clientAssetsDir);
   console.log(`Found ${assetFiles.length} asset files to copy`);
-  
+
   for (const dir of targetDirs) {
     if (fs.existsSync(dir)) {
       const targetAssetsDir = path.join(dir, 'assets');
-      
+
       // Create assets directory if it doesn't exist
       if (!fs.existsSync(targetAssetsDir)) {
         fs.mkdirSync(targetAssetsDir, { recursive: true });
       }
-      
+
       // Copy all asset files
       for (const file of assetFiles) {
         const sourcePath = path.join(clientAssetsDir, file);
         const targetPath = path.join(targetAssetsDir, file);
-        
+
         fs.copyFileSync(sourcePath, targetPath);
       }
-      
+
       console.log(`Copied assets to ${targetAssetsDir}`);
     }
   }

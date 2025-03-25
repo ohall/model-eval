@@ -11,33 +11,38 @@ This document provides instructions for setting up and running the Model Evaluat
 ## Installation
 
 1. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 2. Setup environment variables for the server:
+
    ```bash
    cd packages/server
    cp .env.example .env
    ```
-   
+
    Edit the `.env` file to add your API keys for OpenAI, Anthropic, and Google.
 
 ## Development Setup
 
 ### Running the shared package in watch mode:
+
 ```bash
 cd packages/shared
 pnpm dev
 ```
 
 ### Running the server:
+
 ```bash
 cd packages/server
 pnpm dev
 ```
 
 ### Running the client:
+
 ```bash
 cd packages/client
 pnpm dev
@@ -49,6 +54,7 @@ If you encounter build issues, here are some common solutions:
 
 1. **Import Resolution Issues**:
    Update the imports in code files to use relative paths to the shared package:
+
    ```typescript
    // Change from
    import { Provider } from 'shared/index';
@@ -58,6 +64,7 @@ If you encounter build issues, here are some common solutions:
 
 2. **TypeScript Build Errors**:
    Ensure TypeScript is properly installed in each package:
+
    ```bash
    cd packages/shared && pnpm add -D typescript
    cd packages/server && pnpm add -D typescript

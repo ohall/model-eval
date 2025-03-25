@@ -12,7 +12,7 @@ const NewPromptPage: React.FC = () => {
 
   const handleSubmit = async (prompt: Omit<Prompt, 'id'>) => {
     setIsSubmitting(true);
-    
+
     try {
       await PromptService.create(prompt);
       toast({

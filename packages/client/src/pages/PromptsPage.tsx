@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Container, Heading, SimpleGrid, Spinner, Text, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  SimpleGrid,
+  Spinner,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { Prompt } from 'shared/index';
 import { PromptService } from '../api';
@@ -9,13 +18,13 @@ const PromptsPage: React.FC = () => {
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const toast = useToast();
 
   const fetchPrompts = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const fetchedPrompts = await PromptService.getAll();
       setPrompts(fetchedPrompts);
@@ -85,9 +94,9 @@ const PromptsPage: React.FC = () => {
       ) : (
         <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
           {prompts.map((prompt, index) => (
-            <PromptCard 
-              key={prompt.id || `prompt-${index}`} 
-              prompt={prompt} 
+            <PromptCard
+              key={prompt.id || `prompt-${index}`}
+              prompt={prompt}
               onDelete={handleDeletePrompt}
             />
           ))}

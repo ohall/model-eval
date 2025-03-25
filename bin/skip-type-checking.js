@@ -78,12 +78,12 @@ try {
     fs.renameSync(viteConfigPath, viteConfigPath + '.original');
     console.log('Original config backed up');
   }
-  
+
   fs.symlinkSync(tempConfigPath, viteConfigPath);
   console.log('Temporary config linked as main config');
 } catch (err) {
   console.error('Error creating symbolic link:', err);
-  
+
   // If symlink fails, just replace the file directly
   fs.writeFileSync(viteConfigPath, tempViteConfig);
   console.log('Directly replaced vite.config.ts with TypeScript disabled version');
@@ -96,11 +96,11 @@ console.log('Vite config modified to skip type checking');
 const packageJsonPath = path.join(clientDir, 'package.json');
 if (fs.existsSync(packageJsonPath)) {
   let packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  
+
   // Update the build:heroku script to skip type checking completely
   packageJson.scripts = packageJson.scripts || {};
   packageJson.scripts['build:heroku'] = 'vite build';
-  
+
   // Write the updated package.json
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
   console.log('Updated package.json to skip type checking in build:heroku script');

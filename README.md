@@ -23,6 +23,7 @@ This is a TypeScript monorepo with the following packages:
 ## Architecture
 
 ### Client (Frontend)
+
 - Built with React and TypeScript
 - Chakra UI for responsive design and components
 - React Query for data fetching and caching
@@ -30,7 +31,8 @@ This is a TypeScript monorepo with the following packages:
 - Context API for state management
 
 ### Server (Backend)
-- Node.js with Express.js 
+
+- Node.js with Express.js
 - MongoDB for data storage
 - Integration with multiple LLM APIs:
   - OpenAI API (GPT models)
@@ -38,6 +40,7 @@ This is a TypeScript monorepo with the following packages:
   - Google Gemini API
 
 ### Database Schema
+
 - Prompts: Store reusable prompts with titles and tags
 - Evaluations: Store model responses and performance metrics
 
@@ -56,22 +59,25 @@ This is a TypeScript monorepo with the following packages:
 ### Installation
 
 1. Clone the repository:
+
    ```
    git clone https://github.com/yourusername/model-eval.git
    cd model-eval
    ```
 
 2. Install dependencies:
+
    ```
    pnpm install
    ```
 
 3. Set up environment variables:
+
    ```
    # In packages/server directory
    cp .env.example .env
    # Edit .env and add your API keys and other configuration
-   
+
    # Important: If port 8000 is already in use, change PORT to another value (e.g., 8001)
    # If MongoDB is unavailable, the server will continue to run with limited functionality
    ```
@@ -94,6 +100,7 @@ You can also run the application using Docker and Docker Compose:
 ## Usage
 
 The application will be available at:
+
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000 (or the port you specified in the .env file)
 

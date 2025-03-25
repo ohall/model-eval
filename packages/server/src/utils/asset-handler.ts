@@ -17,7 +17,7 @@ export const assetRedirectMiddleware = (req: Request, res: Response, next: NextF
 
   const requestedAsset = req.path.substring('/assets/'.length);
   logger.info(`Asset request: ${requestedAsset}`);
-  
+
   // If we already have a mapping for this asset, redirect to it
   if (assetMap.has(requestedAsset)) {
     const actualPath = assetMap.get(requestedAsset);
@@ -28,16 +28,16 @@ export const assetRedirectMiddleware = (req: Request, res: Response, next: NextF
       assetMap.delete(requestedAsset);
     }
   }
-  
+
   // No mapping exists or the mapped file no longer exists, try to find the asset
   const rootDir = process.cwd();
   const possibleDirs = [
     path.join(rootDir, 'packages/client/dist/assets'),
     path.join(rootDir, 'client/dist/assets'),
     path.join(rootDir, 'dist/assets'),
-    path.join(__dirname, '../../../client/dist/assets')
+    path.join(__dirname, '../../../client/dist/assets'),
   ];
-  
+
   // Look for the exact filename match
   for (const dir of possibleDirs) {
     const filePath = path.join(dir, requestedAsset);
@@ -47,7 +47,7 @@ export const assetRedirectMiddleware = (req: Request, res: Response, next: NextF
       return res.sendFile(filePath);
     }
   }
-  
+
   // If we reached here, the exact file wasn't found
   // Look for similarly named JS or CSS files (for cases where hash changed)
   if (requestedAsset.endsWith('.js')) {
@@ -79,7 +79,7 @@ export const assetRedirectMiddleware = (req: Request, res: Response, next: NextF
       }
     }
   }
-  
+
   // If still not found, log and continue to next middleware
   logger.error(`Asset ${requestedAsset} not found in any location`);
   next();
@@ -93,43 +93,43 @@ export const initializeAssetMap = () => {
   const possibleManifestPaths = [
     path.join(rootDir, 'packages/client/dist/asset-manifest.json'),
     path.join(rootDir, 'client/dist/asset-manifest.json'),
-    path.join(rootDir, 'dist/asset-manifest.json')
+    path.join(rootDir, 'dist/asset-manifest.json'),
   ];
-  
+
   for (const manifestPath of possibleManifestPaths) {
     if (fs.existsSync(manifestPath)) {
       try {
         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
         logger.info(`Loaded asset manifest from ${manifestPath}`);
-        
+
         // If manifest contains mainJs, add it to the map
         if (manifest.mainJs) {
           const jsFile = manifest.mainJs;
           const jsDir = path.dirname(manifestPath);
           const jsPath = path.join(jsDir, 'assets', jsFile);
-          
+
           if (fs.existsSync(jsPath)) {
             // Add a mapping for index.js (general name) to the specific file
             assetMap.set('index.js', jsPath);
             // Add a mapping for the specific file name
             assetMap.set(jsFile, jsPath);
-            
+
             logger.info(`Mapped JS asset: index.js -> ${jsPath}`);
           }
         }
-        
+
         // Same for CSS
         if (manifest.mainCss) {
           const cssFile = manifest.mainCss;
           const cssDir = path.dirname(manifestPath);
           const cssPath = path.join(cssDir, 'assets', cssFile);
-          
+
           if (fs.existsSync(cssPath)) {
             // Add a mapping for index.css (general name) to the specific file
             assetMap.set('index.css', cssPath);
             // Add a mapping for the specific file name
             assetMap.set(cssFile, cssPath);
-            
+
             logger.info(`Mapped CSS asset: index.css -> ${cssPath}`);
           }
         }
@@ -138,6 +138,6 @@ export const initializeAssetMap = () => {
       }
     }
   }
-  
+
   logger.info(`Initialized asset map with ${assetMap.size} entries`);
 };

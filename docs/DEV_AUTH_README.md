@@ -8,17 +8,20 @@ To simplify development and testing, this application includes a development aut
 
 ## Development Authentication Features
 
-1. **Skip Google Login button**: 
+1. **Skip Google Login button**:
+
    - Available only in development mode
    - Instantly logs you in with a fake development user
    - No actual Google authentication is performed
 
 2. **Client-side fallback**:
+
    - If the Google authentication fails but the Google credential is valid
    - Creates a user from the Google credential information
    - Uses a local "dev token" for authentication
 
 3. **Demo Account**:
+
    - Appears after a Google login error
    - Provides a way to log in without any Google interaction
 

@@ -6,24 +6,24 @@ const getBaseUrl = () => {
   if (window.ENV?.API_URL) {
     return window.ENV.API_URL;
   }
-  
+
   // Then check for build-time environment variables
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  
+
   // Check for Heroku-specific environment variable
   if (import.meta.env.VITE_HEROKU_URL) {
     return `${import.meta.env.VITE_HEROKU_URL}/api`;
   }
-  
+
   // Check if we're on the Heroku domain
   const isHerokuDomain = window.location.hostname.includes('herokuapp.com');
   if (isHerokuDomain) {
     // Use the current origin as the base
     return `${window.location.origin}/api`;
   }
-  
+
   // Default to relative path
   return '/api';
 };
@@ -38,7 +38,7 @@ const apiClient: AxiosInstance = axios.create({
 
 // Add request interceptor for auth
 apiClient.interceptors.request.use(
-  (config) => {
+  config => {
     // Add auth token if available
     const token = localStorage.getItem('token');
     if (token) {
@@ -46,30 +46,27 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error)
 );
 
 // Add response interceptor for error handling
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    const message = 
-      error.response?.data?.message || 
-      error.message || 
-      'An unknown error occurred';
-    
+  response => response,
+  error => {
+    const message = error.response?.data?.message || error.message || 'An unknown error occurred';
+
     // Handle unauthorized errors (token expired or invalid)
     if (error.response?.status === 401) {
       console.warn('Received 401 Unauthorized response');
     }
-    
+
     // Enhanced error object
     const enhancedError = {
       ...error,
       message,
       status: error.response?.status,
     };
-    
+
     return Promise.reject(enhancedError);
   }
 );

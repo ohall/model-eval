@@ -12,7 +12,7 @@ interface ProviderSetting {
 
 interface AppContextType {
   selectedProviders: ProviderSetting[];
-  availableProviders: Record<string, { models: string[], isConfigured: boolean }>;
+  availableProviders: Record<string, { models: string[]; isConfigured: boolean }>;
   isLoading: boolean;
   error: string | null;
   addProvider: (provider: ProviderSetting) => void;
@@ -42,17 +42,19 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [selectedProviders, setSelectedProviders] = useState<ProviderSetting[]>([]);
-  const [availableProviders, setAvailableProviders] = useState<Record<string, { models: string[], isConfigured: boolean }>>({});
+  const [availableProviders, setAvailableProviders] = useState<
+    Record<string, { models: string[]; isConfigured: boolean }>
+  >({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadProviders = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const providers = await ProviderService.getAll();
-      
+
       // Transform provider configs for the UI
       const transformedProviders = Object.entries(providers).reduce((acc, [key, config]) => {
         return {
@@ -63,7 +65,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
           },
         };
       }, {});
-      
+
       setAvailableProviders(transformedProviders);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load providers');

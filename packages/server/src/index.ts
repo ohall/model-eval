@@ -17,15 +17,15 @@ connectDB();
 // Verify production build setup
 if (NODE_ENV === 'production') {
   const rootDir = process.cwd();
-  
+
   // Check client build directories without logging sensitive paths
   const clientPaths = [
     path.resolve(rootDir, 'packages/client/dist'),
     path.resolve(rootDir, 'client/dist'),
     path.resolve(rootDir, 'dist'),
-    path.resolve(__dirname, '../../client/dist')
+    path.resolve(__dirname, '../../client/dist'),
   ];
-  
+
   for (const p of clientPaths) {
     if (fs.existsSync(p)) {
       try {
@@ -102,51 +102,65 @@ if (NODE_ENV === 'production') {
 }
 
 // Configure CORS with explicit options
-app.use(cors({
-  origin: corsOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 86400, // 24 hours
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-}));
+app.use(
+  cors({
+    origin: corsOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 86400, // 24 hours
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+);
 
 // Add security headers
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://accounts.google.com", "https://*.googleusercontent.com", "https://*.googleapis.com"],
-      frameSrc: ["'self'", "https://accounts.google.com", "https://*.googleapis.com"],
-      connectSrc: ["'self'", "https://*.googleapis.com", "https://*.googleusercontent.com"],
-      imgSrc: ["'self'", "https://*.googleusercontent.com", "data:", "https://*.googleapis.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://accounts.google.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://accounts.google.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-      formAction: ["'self'"],
-      baseUri: ["'self'"],
-      frameAncestors: ["'none'"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          'https://accounts.google.com',
+          'https://*.googleusercontent.com',
+          'https://*.googleapis.com',
+        ],
+        frameSrc: ["'self'", 'https://accounts.google.com', 'https://*.googleapis.com'],
+        connectSrc: ["'self'", 'https://*.googleapis.com', 'https://*.googleusercontent.com'],
+        imgSrc: ["'self'", 'https://*.googleusercontent.com', 'data:', 'https://*.googleapis.com'],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com',
+          'https://accounts.google.com',
+        ],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://accounts.google.com'],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+        formAction: ["'self'"],
+        baseUri: ["'self'"],
+        frameAncestors: ["'none'"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false,
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginOpenerPolicy: { policy: "unsafe-none" },
-  dnsPrefetchControl: { allow: false },
-  frameguard: { action: 'deny' },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  },
-  ieNoOpen: true,
-  noSniff: true,
-  referrerPolicy: { policy: 'no-referrer-when-downgrade' },
-  xssFilter: true,
-  hidePoweredBy: true
-}));
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: { policy: 'unsafe-none' },
+    dnsPrefetchControl: { allow: false },
+    frameguard: { action: 'deny' },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    ieNoOpen: true,
+    noSniff: true,
+    referrerPolicy: { policy: 'no-referrer-when-downgrade' },
+    xssFilter: true,
+    hidePoweredBy: true,
+  })
+);
 
 // Add Pino request logger middleware for HTTP request logging
 import { requestLogger } from './utils/logger';
@@ -173,9 +187,9 @@ app.get('/', (req, res) => {
     path.resolve(process.cwd(), 'packages/client/dist/index.html'),
     path.resolve(process.cwd(), 'client/dist/index.html'),
     path.resolve(process.cwd(), 'dist/index.html'),
-    path.resolve(__dirname, '../../client/dist/index.html')
+    path.resolve(__dirname, '../../client/dist/index.html'),
   ];
-  
+
   // Try each path until we find one that exists
   for (const indexPath of possiblePaths) {
     if (fs.existsSync(indexPath)) {
@@ -183,7 +197,7 @@ app.get('/', (req, res) => {
       return res.sendFile(indexPath);
     }
   }
-  
+
   // If no index.html is found, send the fallback page
   logger.warn('No client index.html found, serving fallback page');
   res.send(createFallbackPage());
@@ -198,7 +212,7 @@ const clientDistPaths = [
   path.resolve(process.cwd(), 'packages/client/dist'),
   path.resolve(process.cwd(), 'client/dist'),
   path.resolve(process.cwd(), 'dist'),
-  path.resolve(__dirname, '../../client/dist')
+  path.resolve(__dirname, '../../client/dist'),
 ];
 
 // Try each path and use the first one that exists
@@ -230,43 +244,45 @@ const sensitiveEndpoints = [
 
 // Direct API paths that should return 403 when accessed directly
 const blockedApiPaths = [
-  '/login',  // This should only be handled by SPA routing, not as a direct server route
+  '/login', // This should only be handled by SPA routing, not as a direct server route
 ];
 
 // Block sensitive endpoints that aren't part of our actual API
 app.use((req, res, next) => {
   // Skip if the path is handled by our actual API routes
-  if (req.path.startsWith('/api/') && 
-      req.path !== '/api/users' && 
-      req.path !== '/api/admin' && 
-      req.path !== '/api/config' && 
-      !req.path.startsWith('/api/auth/users') && 
-      !req.path.startsWith('/api/v1/')) {
+  if (
+    req.path.startsWith('/api/') &&
+    req.path !== '/api/users' &&
+    req.path !== '/api/admin' &&
+    req.path !== '/api/config' &&
+    !req.path.startsWith('/api/auth/users') &&
+    !req.path.startsWith('/api/v1/')
+  ) {
     return next();
   }
-  
+
   // Check exact paths that should be blocked
   if (blockedApiPaths.includes(req.path)) {
     logger.warn(`Blocked access to protected path: ${req.path}`);
-    return res.status(403).json({ 
+    return res.status(403).json({
       message: 'Access forbidden',
       status: 403,
-      success: false
+      success: false,
     });
   }
-  
+
   // Block access to sensitive endpoints
   for (const pattern of sensitiveEndpoints) {
     if (pattern.test(req.path)) {
       logger.warn(`Blocked access to sensitive endpoint: ${req.path}`);
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: 'Access forbidden',
         status: 403,
-        success: false
+        success: false,
       });
     }
   }
-  
+
   next();
 });
 
@@ -276,15 +292,15 @@ app.get('*', (req, res, next) => {
   if (req.path.includes('.') || req.path.startsWith('/.')) {
     return next();
   }
-  
+
   // Try multiple potential paths for index.html
   const possiblePaths = [
     path.resolve(process.cwd(), 'packages/client/dist/index.html'),
     path.resolve(process.cwd(), 'client/dist/index.html'),
     path.resolve(process.cwd(), 'dist/index.html'),
-    path.resolve(__dirname, '../../client/dist/index.html')
+    path.resolve(__dirname, '../../client/dist/index.html'),
   ];
-  
+
   // Try each path and use the first one that exists
   for (const indexPath of possiblePaths) {
     if (fs.existsSync(indexPath)) {
@@ -293,7 +309,7 @@ app.get('*', (req, res, next) => {
       return res.sendFile(indexPath);
     }
   }
-  
+
   // If no index.html is found, send the fallback page
   res.status(404).send(createFallbackPage());
 });

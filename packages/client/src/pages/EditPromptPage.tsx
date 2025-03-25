@@ -11,14 +11,14 @@ const EditPromptPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const navigate = useNavigate();
   const toast = useToast();
 
   useEffect(() => {
     const fetchPrompt = async () => {
       if (!id) return;
-      
+
       setIsLoading(true);
       try {
         const fetchedPrompt = await PromptService.getById(id);
@@ -42,9 +42,9 @@ const EditPromptPage: React.FC = () => {
 
   const handleSubmit = async (updatedPrompt: Omit<Prompt, 'id'>) => {
     if (!id) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       await PromptService.update(id, updatedPrompt);
       toast({
@@ -78,7 +78,9 @@ const EditPromptPage: React.FC = () => {
   if (error || !prompt) {
     return (
       <Container maxW="container.md" py={8} textAlign="center">
-        <Heading size="lg" color="red.500">Error: {error || 'Prompt not found'}</Heading>
+        <Heading size="lg" color="red.500">
+          Error: {error || 'Prompt not found'}
+        </Heading>
       </Container>
     );
   }
@@ -87,11 +89,7 @@ const EditPromptPage: React.FC = () => {
     <Container maxW="container.md" py={8}>
       <Heading mb={6}>Edit Prompt</Heading>
       <Box p={6} borderWidth="1px" borderRadius="lg">
-        <PromptForm 
-          initialValues={prompt} 
-          onSubmit={handleSubmit} 
-          isSubmitting={isSubmitting} 
-        />
+        <PromptForm initialValues={prompt} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
       </Box>
     </Container>
   );

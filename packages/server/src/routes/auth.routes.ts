@@ -20,7 +20,7 @@ if (ALLOW_DEV_TOKENS) {
       message: 'Development token generated',
       user,
       token: 'dev-jwt-token',
-      help: 'Use this token with Authorization: Bearer dev-jwt-token'
+      help: 'Use this token with Authorization: Bearer dev-jwt-token',
     });
   });
 }

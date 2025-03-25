@@ -12,7 +12,10 @@ export class AnthropicService {
     });
   }
 
-  async generateResponse(prompt: string, options: Partial<EvaluationOptions>): Promise<{ response: string; metrics: EvaluationMetrics }> {
+  async generateResponse(
+    prompt: string,
+    options: Partial<EvaluationOptions>
+  ): Promise<{ response: string; metrics: EvaluationMetrics }> {
     const startTime = Date.now();
     const model = options.model || 'claude-3-sonnet-20240229';
     logger.info({ model }, 'Using Anthropic model');
@@ -21,9 +24,7 @@ export class AnthropicService {
       const response = await this.client.messages.create({
         model: model,
         max_tokens: options.maxTokens || 1024,
-        messages: [
-          { role: 'user', content: prompt }
-        ],
+        messages: [{ role: 'user', content: prompt }],
         temperature: options.temperature,
       });
 
@@ -34,22 +35,19 @@ export class AnthropicService {
       const promptTokens = response.usage?.input_tokens || 0;
       const completionTokens = response.usage?.output_tokens || 0;
       const totalTokens = promptTokens + completionTokens;
-      
+
       // Get the response text
-      const responseText = 
-        response.content[0]?.type === 'text' 
-          ? response.content[0].text 
-          : '';
+      const responseText = response.content[0]?.type === 'text' ? response.content[0].text : '';
 
       // Calculate approximate cost based on Anthropic's pricing
       // This is a simplified calculation and may not be accurate for all models
       let costUsd = 0;
       if (options.model?.includes('claude-3-opus')) {
-        costUsd = (promptTokens * 0.00003) + (completionTokens * 0.00015);
+        costUsd = promptTokens * 0.00003 + completionTokens * 0.00015;
       } else if (options.model?.includes('claude-3-sonnet')) {
-        costUsd = (promptTokens * 0.000003) + (completionTokens * 0.000015);
+        costUsd = promptTokens * 0.000003 + completionTokens * 0.000015;
       } else if (options.model?.includes('claude-3-haiku')) {
-        costUsd = (promptTokens * 0.00000025) + (completionTokens * 0.00000125);
+        costUsd = promptTokens * 0.00000025 + completionTokens * 0.00000125;
       }
 
       const metrics: EvaluationMetrics = {
@@ -69,26 +67,37 @@ export class AnthropicService {
 
       // Handle quota/rate limit errors
       if (error?.status === 429 || (error?.error && error?.error?.type === 'rate_limit_error')) {
-        throw new Error('Anthropic rate limit or quota exceeded. Please try again later or use a different provider.');
+        throw new Error(
+          'Anthropic rate limit or quota exceeded. Please try again later or use a different provider.'
+        );
       }
-      
+
       // Authentication errors
-      if (error?.status === 401 || (error?.error && error?.error?.type === 'authentication_error')) {
-        throw new Error('Anthropic authentication failed. Please check your API key configuration.');
+      if (
+        error?.status === 401 ||
+        (error?.error && error?.error?.type === 'authentication_error')
+      ) {
+        throw new Error(
+          'Anthropic authentication failed. Please check your API key configuration.'
+        );
       }
 
       // Invalid API version (using completions instead of messages)
       if (error?.status === 400 && error?.error?.message?.includes('not supported on this API')) {
         throw new Error('Anthropic API version mismatch. The model requires the Messages API.');
       }
-      
+
       // Server errors
       if (error?.status >= 500) {
-        throw new Error('Anthropic service is currently experiencing issues. Please try again later or use a different provider.');
+        throw new Error(
+          'Anthropic service is currently experiencing issues. Please try again later or use a different provider.'
+        );
       }
-      
+
       // Default error handling
-      throw new Error(`Anthropic API Error: ${error?.message || (error?.error ? JSON.stringify(error.error) : 'Unknown error')}`);
+      throw new Error(
+        `Anthropic API Error: ${error?.message || (error?.error ? JSON.stringify(error.error) : 'Unknown error')}`
+      );
     }
   }
 }

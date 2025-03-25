@@ -19,14 +19,18 @@ const SelectedProviders: React.FC = () => {
   if (selectedProviders.length === 0) {
     return (
       <Box p={4} borderWidth="1px" borderRadius="lg" bg={bgColor}>
-        <Text color="gray.500" textAlign="center">No providers selected</Text>
+        <Text color="gray.500" textAlign="center">
+          No providers selected
+        </Text>
       </Box>
     );
   }
 
   return (
     <Box p={4} borderWidth="1px" borderRadius="lg" bg={bgColor}>
-      <Text fontWeight="bold" mb={3}>Selected Providers:</Text>
+      <Text fontWeight="bold" mb={3}>
+        Selected Providers:
+      </Text>
       <VStack spacing={3} align="stretch">
         {selectedProviders.map((provider, index) => (
           <Box key={index} p={3} borderWidth="1px" borderRadius="md" bg={itemBgColor}>

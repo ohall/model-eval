@@ -26,7 +26,7 @@ if (clientDistExists) {
   try {
     const distFiles = fs.readdirSync(clientDistPath);
     console.log(`Files in client dist: ${distFiles.join(', ')}`);
-    
+
     // Check for index.html
     if (distFiles.includes('index.html')) {
       console.log('✓ index.html found');
@@ -48,7 +48,7 @@ if (clientDistExists) {
 function buildClient() {
   try {
     console.log('Building client...');
-    
+
     // Make sure client directory exists
     const clientDir = path.join(rootDir, 'packages/client');
     if (!fs.existsSync(clientDir)) {
@@ -62,28 +62,28 @@ function buildClient() {
       }
       return;
     }
-    
+
     // Check if node_modules exists
     const nodeModulesPath = path.join(clientDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
       console.log('Installing client dependencies...');
       execSync('cd packages/client && pnpm install', { stdio: 'inherit' });
     }
-    
+
     // Build the client
     console.log('Running client build...');
     execSync('cd packages/client && pnpm build', { stdio: 'inherit' });
-    
+
     // Verify the build
     if (fs.existsSync(clientDistPath)) {
       const distFilesAfterBuild = fs.readdirSync(clientDistPath);
       console.log(`Client build successful. Files: ${distFilesAfterBuild.join(', ')}`);
-      
+
       // Create a simple HTML file if needed
       const indexHtmlPath = path.join(clientDistPath, 'index.html');
       if (!fs.existsSync(indexHtmlPath)) {
         console.log('Creating fallback index.html...');
-        
+
         // Try to copy from fallback file
         const fallbackFilePath = path.join(rootDir, 'packages/client/fallback-index.html');
         if (fs.existsSync(fallbackFilePath)) {
@@ -100,7 +100,7 @@ function buildClient() {
           createSimpleFallback();
         }
       }
-      
+
       // Create minimal index.html as last resort
       function createSimpleFallback() {
         const fallbackHtml = `<!DOCTYPE html>
@@ -127,7 +127,7 @@ function buildClient() {
   </div>
 </body>
 </html>`;
-        
+
         try {
           fs.writeFileSync(indexHtmlPath, fallbackHtml);
           console.log('Simple fallback index.html created.');

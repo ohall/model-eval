@@ -13,7 +13,7 @@ vi.mock('react-query', () => ({
 global.fetch = vi.fn() as any;
 
 // Mock window.matchMedia for ChakraUI
-window.matchMedia = (query) => ({
+window.matchMedia = query => ({
   matches: false,
   media: query,
   onchange: null,

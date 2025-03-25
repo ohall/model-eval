@@ -21,22 +21,22 @@ interface PromptFormProps {
   isSubmitting?: boolean;
 }
 
-const PromptForm: React.FC<PromptFormProps> = ({ 
-  initialValues = {}, 
+const PromptForm: React.FC<PromptFormProps> = ({
+  initialValues = {},
   onSubmit,
-  isSubmitting = false 
+  isSubmitting = false,
 }) => {
   const [title, setTitle] = useState(initialValues.title || '');
   const [content, setContent] = useState(initialValues.content || '');
   const [tags, setTags] = useState<string[]>(initialValues.tags || []);
   const [newTag, setNewTag] = useState('');
-  
+
   const toast = useToast();
 
   const handleAddTag = () => {
     const trimmedTag = newTag.trim();
     if (!trimmedTag) return;
-    
+
     if (!tags.includes(trimmedTag)) {
       setTags([...tags, trimmedTag]);
       setNewTag('');
@@ -57,7 +57,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate fields
     if (!title.trim() || !content.trim()) {
       toast({
@@ -69,7 +69,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
       });
       return;
     }
-    
+
     try {
       await onSubmit({
         title: title.trim(),
@@ -88,7 +88,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
           <FormLabel>Title</FormLabel>
           <Input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             placeholder="Enter a descriptive title"
           />
         </FormControl>
@@ -97,7 +97,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
           <FormLabel>Content</FormLabel>
           <Textarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={e => setContent(e.target.value)}
             placeholder="Enter your prompt content"
             minH="200px"
           />
@@ -108,13 +108,13 @@ const PromptForm: React.FC<PromptFormProps> = ({
           <HStack>
             <Input
               value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
+              onChange={e => setNewTag(e.target.value)}
               placeholder="Add a tag"
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+              onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
             />
             <Button onClick={handleAddTag}>Add</Button>
           </HStack>
-          
+
           <Box mt={2}>
             {tags.map((tag, index) => (
               <Tag key={index} size="md" colorScheme="blue" m={1}>
@@ -125,12 +125,7 @@ const PromptForm: React.FC<PromptFormProps> = ({
           </Box>
         </FormControl>
 
-        <Button 
-          type="submit" 
-          colorScheme="blue" 
-          isLoading={isSubmitting}
-          loadingText="Saving"
-        >
+        <Button type="submit" colorScheme="blue" isLoading={isSubmitting} loadingText="Saving">
           Save Prompt
         </Button>
       </VStack>

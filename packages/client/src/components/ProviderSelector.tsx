@@ -29,7 +29,7 @@ const ProviderSelector: React.FC = () => {
   const [maxTokens, setMaxTokens] = useState(1024);
   const [models, setModels] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const toast = useToast();
 
   // Load available providers on component mount
@@ -44,7 +44,7 @@ const ProviderSelector: React.FC = () => {
       setSelectedModel('');
       return;
     }
-    
+
     const fetchModels = async () => {
       setIsLoading(true);
       try {
@@ -63,7 +63,7 @@ const ProviderSelector: React.FC = () => {
         setIsLoading(false);
       }
     };
-    
+
     fetchModels();
   }, [selectedProvider]);
 
@@ -101,7 +101,7 @@ const ProviderSelector: React.FC = () => {
           <Select
             placeholder="Select provider"
             value={selectedProvider}
-            onChange={(e) => setSelectedProvider(e.target.value as Provider)}
+            onChange={e => setSelectedProvider(e.target.value as Provider)}
             isDisabled={isLoading}
           >
             {Object.entries(availableProviders).map(([key, config]) => (
@@ -118,9 +118,9 @@ const ProviderSelector: React.FC = () => {
           <Select
             placeholder="Select model"
             value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
+            onChange={e => setSelectedModel(e.target.value)}
           >
-            {models.map((model) => (
+            {models.map(model => (
               <option key={model} value={model}>
                 {model}
               </option>
@@ -135,7 +135,7 @@ const ProviderSelector: React.FC = () => {
             min={0}
             max={1}
             step={0.01}
-            onChange={(val) => setTemperature(val)}
+            onChange={val => setTemperature(val)}
           >
             <SliderTrack>
               <SliderFilledTrack />

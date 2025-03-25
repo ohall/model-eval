@@ -30,18 +30,18 @@ const queryClient = new QueryClient({
   },
 });
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 const App: React.FC = () => {
   return (
     <ChakraProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider 
-          clientId={GOOGLE_CLIENT_ID} 
+        <GoogleOAuthProvider
+          clientId={GOOGLE_CLIENT_ID}
           onScriptLoadError={() => {
-            console.error("Google script failed to load");
-            console.log("Current URL:", window.location.href);
-            console.log("Origin:", window.location.origin);
+            console.error('Google script failed to load');
+            console.log('Current URL:', window.location.href);
+            console.log('Origin:', window.location.origin);
           }}
         >
           <AuthProvider>
@@ -50,7 +50,7 @@ const App: React.FC = () => {
                 <Header />
                 <Routes>
                   <Route path="/login" element={<LoginPage />} />
-                  
+
                   {/* Protected Routes */}
                   <Route element={<ProtectedRoute />}>
                     <Route path="/" element={<HomePage />} />

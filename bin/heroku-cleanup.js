@@ -14,7 +14,7 @@ console.log(`Working in directory: ${rootDir}`);
 const packageDirs = [
   path.join(rootDir, 'packages', 'shared'),
   path.join(rootDir, 'packages', 'client'),
-  path.join(rootDir, 'packages', 'server')
+  path.join(rootDir, 'packages', 'server'),
 ];
 
 // Check and remove node_modules
@@ -24,12 +24,12 @@ let cleanupNeeded = false;
 function recursiveDirectorySize(dirPath) {
   let size = 0;
   if (!fs.existsSync(dirPath)) return size;
-  
+
   const entries = fs.readdirSync(dirPath, { withFileTypes: true });
-  
+
   for (const entry of entries) {
     const fullPath = path.join(dirPath, entry.name);
-    
+
     if (entry.isDirectory()) {
       size += recursiveDirectorySize(fullPath);
     } else {
@@ -37,7 +37,7 @@ function recursiveDirectorySize(dirPath) {
       size += fileSize;
     }
   }
-  
+
   return size;
 }
 
@@ -45,12 +45,12 @@ function formatSize(bytes) {
   const units = ['B', 'KB', 'MB', 'GB'];
   let size = bytes;
   let unitIndex = 0;
-  
+
   while (size >= 1024 && unitIndex < units.length - 1) {
     size /= 1024;
     unitIndex++;
   }
-  
+
   return `${size.toFixed(2)} ${units[unitIndex]}`;
 }
 
@@ -85,10 +85,7 @@ for (const dir of packageDirs) {
 }
 
 // Check for and remove pnpm store if it exists in the project directory
-const pnpmStorePaths = [
-  path.join(rootDir, '.pnpm-store'),
-  path.join(rootDir, '.pnpm')
-];
+const pnpmStorePaths = [path.join(rootDir, '.pnpm-store'), path.join(rootDir, '.pnpm')];
 
 for (const storePath of pnpmStorePaths) {
   if (fs.existsSync(storePath)) {

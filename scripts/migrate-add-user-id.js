@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Migration script to add userId field to existing prompts and evaluations
- * 
+ *
  * Usage:
  * NODE_ENV=production node scripts/migrate-add-user-id.js --admin-user-id=<admin-user-id>
- * 
+ *
  * This will set all existing prompts and evaluations to belong to the admin user,
  * which is required since we now need a userId for everything.
  */
@@ -17,7 +17,9 @@ const args = process.argv.slice(2);
 const adminUserIdArg = args.find(arg => arg.startsWith('--admin-user-id='));
 if (!adminUserIdArg) {
   console.error('Error: --admin-user-id parameter is required');
-  console.error('Usage: NODE_ENV=production node scripts/migrate-add-user-id.js --admin-user-id=<admin-user-id>');
+  console.error(
+    'Usage: NODE_ENV=production node scripts/migrate-add-user-id.js --admin-user-id=<admin-user-id>'
+  );
   exit(1);
 }
 
@@ -34,30 +36,36 @@ require('dotenv').config();
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/model-eval';
 
 // Define schemas (simplified versions of what's in the actual models)
-const promptSchema = new mongoose.Schema({
-  title: String,
-  content: String,
-  tags: [String],
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }
-}, { timestamps: true });
-
-const evaluationSchema = new mongoose.Schema({
-  promptId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Prompt',
+const promptSchema = new mongoose.Schema(
+  {
+    title: String,
+    content: String,
+    tags: [String],
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
-  provider: String,
-  model: String,
-  response: String,
-  metrics: Object,
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
+
+const evaluationSchema = new mongoose.Schema(
+  {
+    promptId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Prompt',
+    },
+    provider: String,
+    model: String,
+    response: String,
+    metrics: Object,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  },
+  { timestamps: true }
+);
 
 // Create models
 const Prompt = mongoose.model('Prompt', promptSchema);

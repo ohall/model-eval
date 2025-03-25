@@ -9,13 +9,8 @@ import {
 
 const router = express.Router();
 
-router.route('/')
-  .get(getPrompts)
-  .post(createPrompt);
+router.route('/').get(getPrompts).post(createPrompt);
 
-router.route('/:id')
-  .get(getPromptById)
-  .put(updatePrompt)
-  .delete(deletePrompt);
+router.route('/:id').get(getPromptById).put(updatePrompt).delete(deletePrompt);
 
 export default router;

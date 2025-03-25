@@ -13,7 +13,7 @@ export const devAuthMiddleware = (req: Request, res: Response, next: NextFunctio
     logger.debug('Development auth middleware skipped in non-development environment');
     return next();
   }
-  
+
   logger.debug('Development auth middleware active');
 
   // Check if this is a request to the auth endpoint
@@ -29,6 +29,6 @@ export const devAuthMiddleware = (req: Request, res: Response, next: NextFunctio
   // For other protected routes, just add a mock user to the request
   req.user = createDevelopmentUser();
   logger.debug({ path: req.path }, 'Added development user to request');
-  
+
   next();
 };

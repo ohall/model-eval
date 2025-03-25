@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Button, 
-  Container, 
-  Divider, 
-  Heading, 
-  Spinner, 
-  Text, 
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Heading,
+  Spinner,
+  Text,
   VStack,
-  useToast 
+  useToast,
 } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { EvaluationResult, Prompt } from 'shared/index';
@@ -21,21 +21,23 @@ import { useAppContext } from '../context/AppContext';
 const EvaluatePromptPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { selectedProviders } = useAppContext();
-  
+
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<EvaluationResult[]>([]);
-  const [failedResults, setFailedResults] = useState<Array<{ provider: string; model: string; error: string }>>([]);
-  
+  const [failedResults, setFailedResults] = useState<
+    Array<{ provider: string; model: string; error: string }>
+  >([]);
+
   // const navigate = useNavigate();
   const toast = useToast();
 
   useEffect(() => {
     const fetchPrompt = async () => {
       if (!id) return;
-      
+
       setIsLoading(true);
       try {
         const fetchedPrompt = await PromptService.getById(id);
@@ -59,11 +61,11 @@ const EvaluatePromptPage: React.FC = () => {
 
   const handleEvaluate = async () => {
     if (!id || selectedProviders.length === 0) return;
-    
+
     setIsEvaluating(true);
     setResults([]);
     setFailedResults([]);
-    
+
     try {
       const response = await EvaluationService.evaluateWithMultipleProviders({
         promptId: id,
@@ -75,10 +77,10 @@ const EvaluatePromptPage: React.FC = () => {
           topP: p.topP,
         })),
       });
-      
+
       setResults(response.successful);
       setFailedResults(response.failed);
-      
+
       if (response.failed.length > 0) {
         // Show toast with partial failure if some models succeeded
         if (response.successful.length > 0) {
@@ -131,7 +133,9 @@ const EvaluatePromptPage: React.FC = () => {
   if (error || !prompt) {
     return (
       <Container maxW="container.xl" py={8} textAlign="center">
-        <Heading size="lg" color="red.500">Error: {error || 'Prompt not found'}</Heading>
+        <Heading size="lg" color="red.500">
+          Error: {error || 'Prompt not found'}
+        </Heading>
       </Container>
     );
   }
@@ -139,14 +143,18 @@ const EvaluatePromptPage: React.FC = () => {
   return (
     <Container maxW="container.xl" py={8}>
       <Heading mb={4}>Evaluate Prompt</Heading>
-      
+
       <Box p={5} borderWidth="1px" borderRadius="lg" mb={6}>
-        <Heading size="md" mb={2}>{prompt.title}</Heading>
+        <Heading size="md" mb={2}>
+          {prompt.title}
+        </Heading>
         <Text whiteSpace="pre-wrap">{prompt.content}</Text>
       </Box>
-      
+
       <Box mb={8}>
-        <Heading size="md" mb={4}>Select Models to Evaluate</Heading>
+        <Heading size="md" mb={4}>
+          Select Models to Evaluate
+        </Heading>
         <Box display={{ md: 'flex' }} gap={6}>
           <Box flex="1" mb={{ base: 4, md: 0 }}>
             <ProviderSelector />
@@ -155,12 +163,12 @@ const EvaluatePromptPage: React.FC = () => {
             <SelectedProviders />
           </Box>
         </Box>
-        
+
         <Box mt={6} textAlign="center">
-          <Button 
-            colorScheme="green" 
-            size="lg" 
-            onClick={handleEvaluate} 
+          <Button
+            colorScheme="green"
+            size="lg"
+            onClick={handleEvaluate}
             isLoading={isEvaluating}
             loadingText="Evaluating"
             isDisabled={selectedProviders.length === 0}
@@ -169,14 +177,16 @@ const EvaluatePromptPage: React.FC = () => {
           </Button>
         </Box>
       </Box>
-      
+
       {(results.length > 0 || failedResults.length > 0) && (
         <>
           <Divider my={6} />
-          
+
           {results.length > 0 && (
             <>
-              <Heading size="md" mb={4}>Evaluation Results</Heading>
+              <Heading size="md" mb={4}>
+                Evaluation Results
+              </Heading>
               <VStack spacing={4} align="stretch" mb={6}>
                 {results.map((result, index) => (
                   <EvaluationResultCard key={result.id || `result-${index}`} evaluation={result} />
@@ -184,17 +194,19 @@ const EvaluatePromptPage: React.FC = () => {
               </VStack>
             </>
           )}
-          
+
           {failedResults.length > 0 && (
             <>
-              <Heading size="md" mb={4} color="red.500">Failed Evaluations</Heading>
+              <Heading size="md" mb={4} color="red.500">
+                Failed Evaluations
+              </Heading>
               <VStack spacing={4} align="stretch">
                 {failedResults.map((result, index) => (
-                  <Box 
+                  <Box
                     key={`failed-${index}`}
-                    p={4} 
-                    borderWidth="1px" 
-                    borderRadius="lg" 
+                    p={4}
+                    borderWidth="1px"
+                    borderRadius="lg"
                     borderColor="red.300"
                     backgroundColor="red.50"
                   >
